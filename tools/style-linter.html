@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Style Guide Linter — Anubhuti Khare</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf7f2; --ink: #1a1208; --surface: #fff;
+    --saffron: #f4720b; --rose: #e8456a; --teal: #0d9488;
+    --yellow: #f59e0b; --green: #16a34a; --muted: #8a7a6a;
+    --border: rgba(0,0,0,0.08); --cream: #fef3e2;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Bricolage Grotesque', sans-serif; min-height: 100vh; }
+
+  header {
+    background: var(--ink); color: white;
+    padding: 1rem 2rem; display: flex; align-items: center; gap: 1.5rem;
+    border-bottom: 3px solid var(--saffron);
+  }
+  .back { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.8rem; }
+  .back:hover { color: var(--saffron); }
+  .tool-logo { font-size: 1.1rem; font-weight: 800; }
+  .tool-logo span { color: var(--saffron); }
+  .tool-sub { font-size: 0.75rem; color: rgba(255,255,255,0.45); font-family: 'DM Mono', monospace; margin-left: auto; }
+
+  .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; height: calc(100vh - 57px); }
+
+  .pane { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; overflow: hidden; }
+  .pane-left { border-right: 1px solid var(--border); }
+  .pane-label { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-family: 'DM Mono', monospace; margin-bottom: 0.25rem; display: flex; align-items: center; justify-content: space-between; }
+  .char-count { font-weight: 400; }
+
+  textarea {
+    flex: 1; width: 100%; border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 1.2rem; font-family: 'DM Mono', monospace;
+    font-size: 0.85rem; line-height: 1.7; resize: none; outline: none;
+    background: var(--surface); color: var(--ink); transition: border-color 0.2s;
+  }
+  textarea:focus { border-color: var(--saffron); }
+
+  .toolbar { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+  .lint-btn {
+    background: var(--saffron); color: white; border: none;
+    padding: 0.65rem 1.5rem; border-radius: 6px; cursor: pointer;
+    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 0.88rem;
+    transition: opacity 0.2s; display: flex; align-items: center; gap: 0.4rem;
+  }
+  .lint-btn:hover { opacity: 0.85; }
+  .clear-btn {
+    background: transparent; border: 1.5px solid var(--border); color: var(--muted);
+    padding: 0.65rem 1rem; border-radius: 6px; cursor: pointer;
+    font-family: 'Bricolage Grotesque', sans-serif; font-size: 0.82rem; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .clear-btn:hover { border-color: var(--rose); color: var(--rose); }
+
+  .sample-btn {
+    background: transparent; border: 1.5px solid var(--border); color: var(--muted);
+    padding: 0.5rem 0.9rem; border-radius: 6px; cursor: pointer;
+    font-family: 'Bricolage Grotesque', sans-serif; font-size: 0.78rem; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .sample-btn:hover { border-color: var(--teal); color: var(--teal); }
+
+  /* RESULTS */
+  .results-pane { overflow-y: auto; }
+
+  .score-card {
+    background: var(--surface); border-radius: 12px;
+    border: 1.5px solid var(--border); padding: 1.2rem 1.5rem;
+    display: flex; align-items: center; gap: 1.5rem;
+  }
+  .score-num {
+    font-size: 2.8rem; font-weight: 800; line-height: 1;
+    font-family: 'DM Mono', monospace;
+  }
+  .score-good { color: var(--green); }
+  .score-ok { color: var(--yellow); }
+  .score-bad { color: var(--rose); }
+  .score-meta { flex: 1; }
+  .score-label { font-size: 0.75rem; color: var(--muted); font-family: 'DM Mono', monospace; margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.1em; }
+  .score-desc { font-size: 0.88rem; font-weight: 600; }
+
+  .issue-group { margin-bottom: 1.5rem; }
+  .issue-group-title {
+    font-size: 0.65rem; font-weight: 800; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted);
+    font-family: 'DM Mono', monospace; margin-bottom: 0.5rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .issue-count {
+    background: var(--rose); color: white;
+    font-size: 0.6rem; padding: 0.1rem 0.45rem; border-radius: 100px;
+  }
+  .issue-count.warn { background: var(--yellow); color: var(--ink); }
+  .issue-count.info { background: var(--teal); color: white; }
+  .issue-count.pass { background: var(--green); }
+
+  .issue-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.9rem 1.1rem; margin-bottom: 0.5rem;
+    border-left: 3px solid var(--rose); font-size: 0.85rem;
+  }
+  .issue-card.warn { border-left-color: var(--yellow); }
+  .issue-card.info { border-left-color: var(--teal); }
+  .issue-card.pass { border-left-color: var(--green); }
+  .issue-rule { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); margin-bottom: 0.3rem; }
+  .issue-msg { font-weight: 600; margin-bottom: 0.3rem; }
+  .issue-detail { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+  .issue-fix { font-size: 0.78rem; color: var(--teal); margin-top: 0.4rem; }
+
+  .empty-state {
+    text-align: center; padding: 4rem 2rem;
+    color: var(--muted); font-size: 0.9rem;
+  }
+  .empty-state .big { font-size: 3rem; margin-bottom: 1rem; }
+  .empty-state p { line-height: 1.7; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
+  .stat-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.75rem; text-align: center;
+  }
+  .stat-val { font-size: 1.4rem; font-weight: 800; font-family: 'DM Mono', monospace; }
+  .stat-lbl { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.2rem; }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; height: auto; }
+    .pane { height: 50vh; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="../index.html" class="back">← Portfolio</a>
+  <div class="tool-logo">Style<span>.</span>Linter</div>
+  <div class="tool-sub">Technical writing style checker</div>
+</header>
+
+<div class="layout">
+  <div class="pane pane-left">
+    <div class="pane-label">
+      Your Documentation Draft
+      <span class="char-count" id="charCount">0 words</span>
+    </div>
+    <textarea id="docInput" placeholder="Paste your documentation here and click Lint…
+
+Try something like: 'The button can be clicked by the user to submit the form. It should be noted that this is a very important step. Please click the button in order to proceed.'" oninput="updateCount()"></textarea>
+    <div class="toolbar">
+      <button class="lint-btn" onclick="lint()">✦ Lint My Docs</button>
+      <button class="clear-btn" onclick="clearAll()">Clear</button>
+      <button class="sample-btn" onclick="loadSample(1)">Load Sample 1</button>
+      <button class="sample-btn" onclick="loadSample(2)">Load Sample 2</button>
+    </div>
+  </div>
+
+  <div class="pane results-pane" id="resultsPane">
+    <div class="empty-state">
+      <div class="big">✍️</div>
+      <p>Paste your documentation draft on the left and click <strong>Lint My Docs</strong> to check for style issues, passive voice, jargon, and more.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const samples = {
+  1: `Click the submit button in order to save your changes. It should be noted that the data will be processed by the system. The user will be notified via email. In order to access the dashboard, the login page must be visited by the user first. Please be advised that errors may occur. Clicking on the button is very easy and simple.`,
+  2: `Getting started with our API is quite easy. Simply utilize the authentication endpoint to obtain your token. The token should then be leveraged in all subsequent requests. Note that the system will automatically handle session management. In the event that your token expires, a new one can be generated by the user. It is important to make sure that you keep your credentials secure. Due to the fact that our API is RESTful, all endpoints follow standard HTTP conventions.`
+};
+
+const passiveVoice = [
+  /\b(is|are|was|were|be|been|being)\s+(being\s+)?\w+ed\b/gi,
+  /\b(is|are|was|were)\s+\w+en\b/gi,
+];
+
+const jargon = ['utilize', 'leverage', 'synergy', 'paradigm', 'bandwidth', 'circle back', 'deep dive', 'low-hanging fruit', 'move the needle', 'touch base', 'value-add', 'pain point', 'robust', 'seamless', 'empower', 'ecosystem'];
+
+const weakPhrases = ['it should be noted', 'please be advised', 'in order to', 'due to the fact that', 'at this point in time', 'in the event that', 'make sure that', 'please note that', 'it is important to', 'very easy', 'quite simple', 'simply'];
+
+const longSentenceThreshold = 30;
+
+function updateCount() {
+  const text = document.getElementById('docInput').value;
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  document.getElementById('charCount').textContent = words + ' words';
+}
+
+function clearAll() {
+  document.getElementById('docInput').value = '';
+  updateCount();
+  document.getElementById('resultsPane').innerHTML = `<div class="empty-state"><div class="big">✍️</div><p>Paste your documentation draft on the left and click <strong>Lint My Docs</strong>.</p></div>`;
+}
+
+function loadSample(n) {
+  document.getElementById('docInput').value = samples[n];
+  updateCount();
+}
+
+function lint() {
+  const text = document.getElementById('docInput').value.trim();
+  if (!text) { alert('Please enter some text to lint.'); return; }
+
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+  const words = text.split(/\s+/);
+  const wordCount = words.length;
+
+  // Passive voice check
+  const passiveIssues = [];
+  sentences.forEach((s, i) => {
+    passiveVoice.forEach(re => {
+      const matches = s.match(re);
+      if (matches) {
+        passiveIssues.push({ sentence: s.trim(), match: matches[0] });
+      }
+    });
+  });
+
+  // Jargon check
+  const jargonFound = jargon.filter(j => new RegExp('\\b' + j + '\\b', 'i').test(text));
+
+  // Weak phrases
+  const weakFound = weakPhrases.filter(p => text.toLowerCase().includes(p));
+
+  // Long sentences
+  const longSentences = sentences.filter(s => s.split(/\s+/).length > longSentenceThreshold);
+
+  // Avg sentence length
+  const avgLen = sentences.reduce((a, s) => a + s.split(/\s+/).length, 0) / sentences.length;
+
+  // Repeated words check
+  const wordFreq = {};
+  words.forEach(w => { const c = w.toLowerCase().replace(/[^a-z]/g,''); if(c.length > 4) wordFreq[c] = (wordFreq[c]||0)+1; });
+  const overused = Object.entries(wordFreq).filter(([w,c]) => c > 3 && !['this','that','with','from','have','they','their','there','which','where'].includes(w));
+
+  // Score calc
+  let deductions = passiveIssues.length * 4 + jargonFound.length * 5 + weakFound.length * 3 + longSentences.length * 3 + overused.length * 2;
+  const score = Math.max(0, Math.min(100, 100 - deductions));
+  const scoreClass = score >= 80 ? 'score-good' : score >= 60 ? 'score-ok' : 'score-bad';
+  const scoreDesc = score >= 80 ? 'Clean, clear writing ✓' : score >= 60 ? 'Some issues to address' : 'Needs significant revision';
+
+  let html = `
+    <div class="score-card" style="margin-bottom:1rem">
+      <div class="score-num ${scoreClass}">${score}</div>
+      <div class="score-meta">
+        <div class="score-label">Clarity Score</div>
+        <div class="score-desc">${scoreDesc}</div>
+      </div>
+    </div>
+    <div class="stats-row" style="margin-bottom:1.5rem">
+      <div class="stat-box"><div class="stat-val">${wordCount}</div><div class="stat-lbl">Words</div></div>
+      <div class="stat-box"><div class="stat-val">${sentences.length}</div><div class="stat-lbl">Sentences</div></div>
+      <div class="stat-box"><div class="stat-val">${Math.round(avgLen)}</div><div class="stat-lbl">Avg Length</div></div>
+      <div class="stat-box"><div class="stat-val">${passiveIssues.length + jargonFound.length + weakFound.length}</div><div class="stat-lbl">Issues</div></div>
+    </div>
+  `;
+
+  // Passive voice
+  if (passiveIssues.length) {
+    html += `<div class="issue-group"><div class="issue-group-title">Passive Voice <span class="issue-count">${passiveIssues.length}</span></div>`;
+    passiveIssues.slice(0, 4).forEach(issue => {
+      html += `<div class="issue-card">
+        <div class="issue-rule">passive-voice</div>
+        <div class="issue-msg">Passive construction detected: <em>"${issue.match}"</em></div>
+        <div class="issue-detail">"${issue.sentence.slice(0, 80)}${issue.sentence.length > 80 ? '…' : ''}"</div>
+        <div class="issue-fix">→ Rewrite to make the subject the actor of the action.</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Jargon
+  if (jargonFound.length) {
+    html += `<div class="issue-group"><div class="issue-group-title">Jargon & Buzzwords <span class="issue-count warn">${jargonFound.length}</span></div>`;
+    jargonFound.forEach(j => {
+      html += `<div class="issue-card warn">
+        <div class="issue-rule">avoid-jargon</div>
+        <div class="issue-msg">Jargon word: <em>"${j}"</em></div>
+        <div class="issue-detail">Buzzwords obscure meaning. Replace with plain, specific language.</div>
+        <div class="issue-fix">→ ${{ 'utilize': 'Use "use"', 'leverage': 'Use "use" or describe specifically', 'robust': 'Describe what makes it robust', 'seamless': 'Describe what the user experience is' }[j] || 'Replace with plain language.'}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Weak phrases
+  if (weakFound.length) {
+    html += `<div class="issue-group"><div class="issue-group-title">Weak Phrases <span class="issue-count warn">${weakFound.length}</span></div>`;
+    weakFound.forEach(p => {
+      const fixes = {
+        'in order to': '"to"',
+        'due to the fact that': '"because"',
+        'it should be noted': 'Remove — just say it',
+        'please be advised': 'Remove — just say it',
+        'in the event that': '"if"',
+        'at this point in time': '"now"',
+        'very easy': '"straightforward" or just remove "very"',
+        'simply': 'Remove — it can be patronizing',
+      };
+      html += `<div class="issue-card warn">
+        <div class="issue-rule">weak-phrase</div>
+        <div class="issue-msg">Wordy phrase: <em>"${p}"</em></div>
+        <div class="issue-fix">→ Replace with ${fixes[p] || 'a more concise alternative'}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Long sentences
+  if (longSentences.length) {
+    html += `<div class="issue-group"><div class="issue-group-title">Long Sentences <span class="issue-count info">${longSentences.length}</span></div>`;
+    longSentences.slice(0, 3).forEach(s => {
+      html += `<div class="issue-card info">
+        <div class="issue-rule">sentence-length · ${s.split(/\s+/).length} words</div>
+        <div class="issue-msg">Sentence exceeds 30 words</div>
+        <div class="issue-detail">"${s.trim().slice(0, 100)}…"</div>
+        <div class="issue-fix">→ Break into 2–3 shorter sentences for easier scanning.</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // All clear
+  if (passiveIssues.length === 0 && jargonFound.length === 0 && weakFound.length === 0) {
+    html += `<div class="issue-card pass">
+      <div class="issue-rule">all-checks-passed</div>
+      <div class="issue-msg">No major issues found 🎉</div>
+      <div class="issue-detail">Your writing is clear, direct, and jargon-free. Well done!</div>
+    </div>`;
+  }
+
+  document.getElementById('resultsPane').innerHTML = html;
+}
+</script>
+</body>
+</html>
