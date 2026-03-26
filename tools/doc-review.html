@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doc Review Checklist — Anubhuti Khare</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bricolage+Grotesque:wght@400;600;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf7f2; --ink: #1a1208; --surface: #fff;
+    --saffron: #f4720b; --rose: #e8456a; --teal: #0d9488;
+    --green: #16a34a; --yellow: #d97706; --purple: #7c3aed;
+    --lavender: #8b5cf6; --muted: #8a7a6a;
+    --border: rgba(0,0,0,0.08); --cream: #fef3e2;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Bricolage Grotesque', sans-serif; min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: var(--ink); color: white; padding: 1rem 2rem;
+    display: flex; align-items: center; gap: 1.5rem;
+    border-bottom: 3px solid var(--saffron);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .back { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.8rem; transition: color 0.15s; }
+  .back:hover { color: var(--saffron); }
+  .tool-logo { font-size: 1.1rem; font-weight: 800; }
+  .tool-logo span { color: var(--saffron); }
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
+
+  /* SCORE RING */
+  .score-widget { display: flex; align-items: center; gap: 0.75rem; }
+  .score-ring-wrap { position: relative; width: 52px; height: 52px; }
+  .score-ring-wrap svg { transform: rotate(-90deg); }
+  .score-track { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 4; }
+  .score-fill { fill: none; stroke: var(--saffron); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.5s ease, stroke 0.3s; }
+  .score-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 0.75rem; font-weight: 700; color: white; }
+  .score-label { font-size: 0.72rem; color: rgba(255,255,255,0.55); font-family: 'DM Mono', monospace; line-height: 1.4; }
+  .score-label strong { display: block; color: white; font-size: 0.8rem; }
+
+  /* MAIN LAYOUT */
+  .page { max-width: 900px; margin: 0 auto; padding: 2rem 2rem 5rem; }
+
+  /* META PANEL */
+  .meta-panel {
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 14px; padding: 1.5rem 2rem; margin-bottom: 2rem;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;
+  }
+  .meta-panel .full { grid-column: 1 / -1; }
+  .meta-group label { display: block; font-family: 'DM Mono', monospace; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.35rem; }
+  .meta-input {
+    width: 100%; border: 1.5px solid var(--border); border-radius: 6px;
+    padding: 0.5rem 0.75rem; font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.85rem; color: var(--ink); background: var(--bg); outline: none;
+    transition: border-color 0.15s;
+  }
+  .meta-input:focus { border-color: var(--saffron); background: white; }
+
+  /* ABOUT BOX */
+  .about-box {
+    background: var(--cream); border-radius: 10px; padding: 1.2rem 1.5rem;
+    margin-bottom: 2rem; border-left: 3px solid var(--saffron);
+    font-size: 0.85rem; line-height: 1.7; color: #5a4e42;
+  }
+  .about-box strong { color: var(--ink); }
+
+  /* ACTION BAR */
+  .action-bar { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2rem; }
+  .action-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer;
+    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 0.82rem;
+    border: 1.5px solid transparent; transition: all 0.15s;
+  }
+  .btn-primary { background: var(--saffron); color: white; }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-teal { background: var(--teal); color: white; }
+  .btn-teal:hover { opacity: 0.85; }
+  .btn-outline { background: transparent; border-color: var(--border); color: var(--muted); }
+  .btn-outline:hover { border-color: var(--ink); color: var(--ink); }
+  .btn-danger { background: transparent; border-color: rgba(232,69,106,0.3); color: var(--rose); }
+  .btn-danger:hover { background: var(--rose); color: white; border-color: transparent; }
+
+  /* PROGRESS SUMMARY */
+  .progress-summary {
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 1rem 1.5rem; margin-bottom: 2rem;
+    display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+  }
+  .prog-track { flex: 1; min-width: 200px; }
+  .prog-label { display: flex; justify-content: space-between; font-size: 0.78rem; font-family: 'DM Mono', monospace; color: var(--muted); margin-bottom: 0.4rem; }
+  .prog-bar { height: 6px; background: var(--bg); border-radius: 100px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--saffron), var(--green)); transition: width 0.4s ease; }
+  .prog-stat { text-align: center; }
+  .prog-stat-val { font-family: 'DM Mono', monospace; font-size: 1.3rem; font-weight: 700; color: var(--ink); line-height: 1; }
+  .prog-stat-lbl { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.2rem; font-family: 'DM Mono', monospace; }
+
+  /* SECTION */
+  .cl-section { margin-bottom: 1.5rem; border-radius: 12px; overflow: hidden; border: 1.5px solid var(--border); background: var(--surface); }
+  .cl-section-header {
+    display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem;
+    cursor: pointer; user-select: none; border-left: 4px solid;
+    transition: background 0.15s;
+  }
+  .cl-section-header:hover { background: var(--bg); }
+  .section-icon { font-size: 1.2rem; }
+  .section-name { font-weight: 800; font-size: 0.95rem; flex: 1; }
+  .section-meta { display: flex; align-items: center; gap: 0.75rem; }
+  .section-progress { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+  .section-weight { font-family: 'DM Mono', monospace; font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 100px; background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+  .section-chevron { font-size: 0.7rem; color: var(--muted); transition: transform 0.2s; }
+  .cl-section.open .section-chevron { transform: rotate(180deg); }
+
+  .cl-items { display: none; border-top: 1px solid var(--border); }
+  .cl-section.open .cl-items { display: block; }
+
+  /* ITEM */
+  .cl-item {
+    display: grid; grid-template-columns: 24px 1fr auto;
+    gap: 0.75rem; align-items: start; padding: 0.9rem 1.25rem;
+    border-bottom: 1px solid var(--border); cursor: pointer;
+    transition: background 0.1s;
+  }
+  .cl-item:last-child { border-bottom: none; }
+  .cl-item:hover { background: var(--bg); }
+  .cl-item.checked { background: rgba(22,163,74,0.03); }
+
+  .cl-checkbox {
+    width: 20px; height: 20px; border-radius: 5px; border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px; transition: all 0.15s;
+  }
+  .cl-item.checked .cl-checkbox { background: var(--green); border-color: var(--green); }
+  .cl-checkbox::after { content: '✓'; font-size: 0.7rem; font-weight: 900; color: white; display: none; }
+  .cl-item.checked .cl-checkbox::after { display: block; }
+
+  .cl-item-content {}
+  .cl-item-text { font-size: 0.88rem; font-weight: 600; line-height: 1.5; margin-bottom: 0.2rem; }
+  .cl-item.checked .cl-item-text { color: var(--muted); text-decoration: line-through; text-decoration-color: rgba(22,163,74,0.4); }
+  .cl-item-detail { font-size: 0.76rem; color: var(--muted); line-height: 1.55; }
+  .cl-item-na { font-size: 0.72rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  .item-badges { display: flex; flex-direction: column; gap: 0.3rem; align-items: flex-end; flex-shrink: 0; }
+  .badge-priority { font-family: 'DM Mono', monospace; font-size: 0.58rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .p-critical { background: rgba(232,69,106,0.12); color: var(--rose); }
+  .p-high { background: rgba(244,114,11,0.12); color: var(--saffron); }
+  .p-medium { background: rgba(217,119,6,0.12); color: var(--yellow); }
+  .p-low { background: rgba(22,163,74,0.12); color: var(--green); }
+  .badge-points { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--muted); }
+
+  .na-toggle {
+    font-size: 0.65rem; color: var(--muted); background: var(--bg);
+    border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.4rem;
+    cursor: pointer; font-family: 'DM Mono', monospace; transition: all 0.15s;
+    margin-top: 0.4rem;
+  }
+  .na-toggle:hover { border-color: var(--muted); }
+  .cl-item.na .cl-item-text { color: var(--muted); text-decoration: line-through; text-decoration-color: rgba(0,0,0,0.2); }
+  .cl-item.na .cl-checkbox { opacity: 0.3; }
+
+  /* NOTES FIELD */
+  .notes-row {
+    padding: 0.75rem 1.25rem; background: rgba(0,0,0,0.02);
+    border-top: 1px dashed var(--border); display: none;
+  }
+  .notes-row.open { display: block; }
+  .notes-input {
+    width: 100%; border: 1px solid var(--border); border-radius: 6px;
+    padding: 0.5rem 0.75rem; font-family: 'DM Mono', monospace; font-size: 0.78rem;
+    background: white; color: var(--ink); outline: none; resize: vertical; min-height: 60px;
+    transition: border-color 0.15s;
+  }
+  .notes-input:focus { border-color: var(--saffron); }
+  .notes-toggle { font-size: 0.68rem; color: var(--teal); cursor: pointer; margin-top: 0.3rem; font-family: 'DM Mono', monospace; }
+  .notes-toggle:hover { text-decoration: underline; }
+
+  /* RESULTS PANEL */
+  .results-panel {
+    background: var(--ink); color: var(--paper, #faf7f2);
+    border-radius: 14px; padding: 2rem; margin-top: 2rem; display: none;
+  }
+  .results-panel.show { display: block; }
+  .results-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; }
+  .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .result-box { background: rgba(255,255,255,0.06); border-radius: 8px; padding: 1rem; text-align: center; }
+  .result-val { font-family: 'DM Mono', monospace; font-size: 1.8rem; font-weight: 700; line-height: 1; }
+  .result-lbl { font-size: 0.65rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.3rem; font-family: 'DM Mono', monospace; }
+  .result-green { color: #3fb950; }
+  .result-yellow { color: #e3b341; }
+  .result-red { color: #f78166; }
+
+  .section-scores { display: flex; flex-direction: column; gap: 0.5rem; }
+  .section-score-row { display: flex; align-items: center; gap: 1rem; font-size: 0.82rem; }
+  .section-score-name { flex: 1; color: rgba(255,255,255,0.75); }
+  .section-score-bar-wrap { width: 120px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 100px; overflow: hidden; }
+  .section-score-bar { height: 100%; border-radius: 100px; background: var(--saffron); }
+  .section-score-pct { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: rgba(255,255,255,0.55); min-width: 36px; text-align: right; }
+
+  .save-toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--green); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; display: none; animation: slideUp 0.3s ease; z-index: 999; }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  @media (max-width: 640px) {
+    .meta-panel { grid-template-columns: 1fr; }
+    .meta-panel .full { grid-column: 1; }
+    .progress-summary { flex-direction: column; }
+    header { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="../index.html" class="back">← Portfolio</a>
+  <div class="tool-logo">Doc<span>.</span>Review</div>
+  <div class="header-right">
+    <div class="score-widget">
+      <div class="score-ring-wrap">
+        <svg width="52" height="52" viewBox="0 0 52 52">
+          <circle class="score-track" cx="26" cy="26" r="22"/>
+          <circle class="score-fill" id="scoreRing" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="138.2"/>
+        </svg>
+        <div class="score-num" id="scoreNum">0%</div>
+      </div>
+      <div class="score-label"><strong id="scoreLabel">Not started</strong>Weighted Readiness</div>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+
+  <div class="about-box">
+    <strong>How to use:</strong> Fill in the review metadata below, then work through each checklist section. Check items as you verify them. Mark items as N/A if they don't apply to this document. Use the notes field under each item for inline feedback. When done, click <strong>Generate Report</strong> to get a weighted readiness score and section breakdown — or export as JSON for AI-assisted auditing.
+  </div>
+
+  <!-- META -->
+  <div class="meta-panel">
+    <div class="meta-group">
+      <label>Reviewer Name</label>
+      <input class="meta-input" id="meta-reviewer" placeholder="Anubhuti Khare" />
+    </div>
+    <div class="meta-group">
+      <label>Writer Name</label>
+      <input class="meta-input" id="meta-writer" placeholder="Author name" />
+    </div>
+    <div class="meta-group">
+      <label>Audit Date</label>
+      <input class="meta-input" id="meta-date" type="date" />
+    </div>
+    <div class="meta-group full">
+      <label>Document URL or Title</label>
+      <input class="meta-input" id="meta-doc" placeholder="https://docs.example.com/getting-started or 'Getting Started Guide v2'" />
+    </div>
+    <div class="meta-group">
+      <label>Writer Email</label>
+      <input class="meta-input" id="meta-email" placeholder="writer@company.com" type="email" />
+    </div>
+    <div class="meta-group">
+      <label>Document Type</label>
+      <select class="meta-input" id="meta-type">
+        <option value="">Select type…</option>
+        <option>API Reference</option>
+        <option>User Guide</option>
+        <option>Tutorial / How-to</option>
+        <option>Conceptual / Overview</option>
+        <option>Release Notes</option>
+        <option>UX Microcopy</option>
+        <option>Technical Spec</option>
+        <option>Support Article</option>
+      </select>
+    </div>
+    <div class="meta-group">
+      <label>Review Type</label>
+      <select class="meta-input" id="meta-review-type">
+        <option value="">Select…</option>
+        <option>Self-review</option>
+        <option>Peer review</option>
+        <option>Final review before publish</option>
+        <option>Post-publish audit</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="action-bar">
+    <button class="action-btn btn-primary" onclick="saveProgress()">💾 Save Progress</button>
+    <button class="action-btn btn-teal" onclick="generateReport()">📊 Generate Report</button>
+    <button class="action-btn btn-outline" onclick="exportJSON()">⬇ Export JSON Rubric</button>
+    <button class="action-btn btn-outline" onclick="exportPDF()">🖨 Export PDF</button>
+    <button class="action-btn btn-danger" onclick="clearAll()">✕ Clear All</button>
+  </div>
+
+  <!-- PROGRESS SUMMARY -->
+  <div class="progress-summary">
+    <div class="prog-track">
+      <div class="prog-label"><span>Overall progress</span><span id="progText">0 / 0 items</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    </div>
+    <div class="prog-stat"><div class="prog-stat-val" id="statChecked">0</div><div class="prog-stat-lbl">Checked</div></div>
+    <div class="prog-stat"><div class="prog-stat-val" id="statNA">0</div><div class="prog-stat-lbl">N/A</div></div>
+    <div class="prog-stat"><div class="prog-stat-val" id="statRemaining">0</div><div class="prog-stat-lbl">Remaining</div></div>
+    <div class="prog-stat"><div class="prog-stat-val" id="statScore" style="color:var(--saffron)">0%</div><div class="prog-stat-lbl">Score</div></div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div id="checklistContainer"></div>
+
+  <!-- RESULTS -->
+  <div class="results-panel" id="resultsPanel">
+    <div class="results-title">📋 Review Report</div>
+    <div class="results-grid" id="resultsGrid"></div>
+    <div class="section-scores" id="sectionScores"></div>
+  </div>
+
+</div>
+
+<div class="save-toast" id="saveToast">✓ Progress saved!</div>
+
+<script>
+const CHECKLIST = [
+  {
+    id: 'accuracy', name: 'Technical Accuracy', icon: '🎯', color: 'var(--saffron)', weight: 25,
+    items: [
+      { id: 'a1', text: 'All technical claims are verified with the product or engineering team', detail: 'Do not publish until edge cases and version-specific behaviors are confirmed.', priority: 'critical', points: 10 },
+      { id: 'a2', text: 'Code samples are tested and return expected output', detail: 'Copy-paste code that doesn\'t work is worse than no code at all. Test every snippet.', priority: 'critical', points: 10 },
+      { id: 'a3', text: 'API endpoints, parameters, and response schemas match the current spec', detail: 'Confirm against the latest OpenAPI spec or directly with the backend team.', priority: 'critical', points: 10 },
+      { id: 'a4', text: 'Screenshots and UI references match the current product version', detail: 'Stale screenshots erode trust faster than anything. Verify before publishing.', priority: 'high', points: 8 },
+      { id: 'a5', text: 'Version numbers, dates, and product names are accurate and current', detail: 'Check against release notes and the style guide for canonical product naming.', priority: 'high', points: 7 },
+      { id: 'a6', text: 'Known limitations, edge cases, and exceptions are documented', detail: 'Omitting these generates support tickets. Users who hit them will be grateful you warned them.', priority: 'medium', points: 5 },
+      { id: 'a7', text: 'Error messages and codes reference the correct behaviour', detail: 'If you list error codes, verify their descriptions match what the system actually returns.', priority: 'medium', points: 5 },
+      { id: 'a8', text: 'Third-party references and external links are valid and accessible', detail: 'Broken external links are embarrassing and signal neglect. Check all outbound URLs.', priority: 'low', points: 3 },
+    ]
+  },
+  {
+    id: 'structure', name: 'Structure & Information Architecture', icon: '🏗', color: 'var(--purple)', weight: 20,
+    items: [
+      { id: 's1', text: 'Document has a clear, descriptive title that reflects content accurately', detail: 'The title is the most important piece of navigation copy. Make it count.', priority: 'critical', points: 10 },
+      { id: 's2', text: 'H1 → H2 → H3 hierarchy is respected with no heading level skips', detail: 'Broken heading hierarchy breaks screen readers and document structure.', priority: 'high', points: 8 },
+      { id: 's3', text: 'Most important information leads — not buried after context', detail: 'Apply the inverted pyramid. Don\'t make users read four paragraphs to find the answer.', priority: 'high', points: 8 },
+      { id: 's4', text: 'Prerequisites and required context are stated at the beginning', detail: 'Never assume the reader has the context you have. State what they need to know upfront.', priority: 'high', points: 7 },
+      { id: 's5', text: 'All internal links and cross-references resolve correctly', detail: 'Test every internal link. Broken internal links are broken trust.', priority: 'high', points: 7 },
+      { id: 's6', text: 'Sections follow a logical, user-centred sequence', detail: 'Would a first-time reader understand the flow? Does it match their mental model?', priority: 'medium', points: 5 },
+      { id: 's7', text: 'Procedures use numbered lists; concepts and options use bullets', detail: 'Steps must be numbered. Bullets are for non-sequential items only.', priority: 'medium', points: 5 },
+      { id: 's8', text: 'Tables are used only for comparative or reference data, not prose replacement', detail: 'Tables work for parameters and comparisons. They\'re bad for narrative content.', priority: 'low', points: 3 },
+    ]
+  },
+  {
+    id: 'readability', name: 'Readability & Clarity', icon: '📖', color: 'var(--teal)', weight: 20,
+    items: [
+      { id: 'r1', text: 'Active voice is used throughout — subject performs the action', detail: '"Click Save" not "The Save button should be clicked." Active voice is shorter and clearer.', priority: 'high', points: 8 },
+      { id: 'r2', text: 'Average sentence length is under 25 words', detail: 'Long sentences force re-reads. Break complex ideas into shorter units.', priority: 'high', points: 7 },
+      { id: 'r3', text: 'No undefined jargon, acronyms, or internal terminology', detail: 'Every undefined acronym is a reader lost. Define on first use or link to a glossary.', priority: 'high', points: 8 },
+      { id: 'r4', text: 'Second person ("you") is used to address the reader directly', detail: 'Direct address is more engaging and clearer than third-person passive documentation.', priority: 'medium', points: 5 },
+      { id: 'r5', text: 'Weak filler phrases are removed (e.g., "please note that", "in order to")', detail: '"In order to" → "To". "Please note that" → just say it. Remove filler before publishing.', priority: 'medium', points: 5 },
+      { id: 'r6', text: 'Paragraphs are focused — one idea per paragraph', detail: 'Multi-idea paragraphs are hard to scan. Break them up ruthlessly.', priority: 'medium', points: 4 },
+      { id: 'r7', text: 'The document passes a read-aloud test — sounds natural when spoken', detail: 'If it sounds unnatural out loud, it reads unnaturally too. Read it aloud before publishing.', priority: 'low', points: 3 },
+    ]
+  },
+  {
+    id: 'style', name: 'Style & Consistency', icon: '✒️', color: 'var(--rose)', weight: 15,
+    items: [
+      { id: 'st1', text: 'Terminology is consistent — no synonym switching for the same concept', detail: '"Click" vs "Select" vs "Press" — pick one per action and stick to it document-wide.', priority: 'high', points: 8 },
+      { id: 'st2', text: 'Product names and feature names match current branding and style guide', detail: 'Names change more than you think. Always verify against the official style guide.', priority: 'high', points: 8 },
+      { id: 'st3', text: 'Code formatting is consistent — inline code vs code blocks used correctly', detail: 'Inline code for values, file names, commands in prose. Code blocks for multi-line samples.', priority: 'medium', points: 6 },
+      { id: 'st4', text: 'Bold, italics, and emphasis are used purposefully and consistently', detail: 'Don\'t bold things for emphasis randomly. Bold = UI element or key term.', priority: 'medium', points: 5 },
+      { id: 'st5', text: 'Number formatting is consistent (numerals vs spelled out)', detail: 'Use numerals for technical values and anything above 10. Spell out below 10 in prose.', priority: 'low', points: 3 },
+      { id: 'st6', text: 'Capitalisation is consistent with the style guide', detail: 'Title case for headings? Sentence case? Pick one and apply it uniformly.', priority: 'low', points: 3 },
+      { id: 'st7', text: 'Oxford comma is used consistently throughout', detail: 'The Oxford comma prevents ambiguity. Use it in all lists of three or more.', priority: 'low', points: 2 },
+    ]
+  },
+  {
+    id: 'accessibility', name: 'Accessibility & Global Readiness', icon: '🌍', color: 'var(--green)', weight: 10,
+    items: [
+      { id: 'ac1', text: 'All images have descriptive, meaningful alt text', detail: 'Every image that conveys meaning needs alt text. Decorative images use alt="".', priority: 'critical', points: 10 },
+      { id: 'ac2', text: 'Color is not the only way information is conveyed', detail: 'Colorblind readers should not miss meaning. Add labels, patterns, or shapes alongside color.', priority: 'high', points: 8 },
+      { id: 'ac3', text: 'Links have descriptive anchor text — not "click here" or "read more"', detail: '"See the authentication guide" not "click here". Screen readers read link text in isolation.', priority: 'high', points: 7 },
+      { id: 'ac4', text: 'Idioms, metaphors, and culturally specific phrases are avoided or explained', detail: 'Technical docs reach global audiences. "Hit the ground running" means nothing in many cultures.', priority: 'medium', points: 5 },
+      { id: 'ac5', text: 'Date, time, and currency formats are either localised or explicitly specified', detail: '01/02/03 is ambiguous across regions. Use ISO 8601 or spell out the month.', priority: 'medium', points: 4 },
+      { id: 'ac6', text: 'Document metadata (title, description) is complete for search and screen readers', detail: 'Metadata helps search engines, screen readers, and internal site search surface your content.', priority: 'low', points: 3 },
+    ]
+  },
+  {
+    id: 'ux', name: 'UX Writing & Microcopy (if applicable)', icon: '🖊', color: 'var(--yellow)', weight: 10,
+    items: [
+      { id: 'u1', text: 'UI labels, button text, and microcopy match what appears in the actual product', detail: 'Docs that say "click Submit" when the button says "Save & Continue" erode trust immediately.', priority: 'critical', points: 10 },
+      { id: 'u2', text: 'Error messages are actionable — they tell the user what went wrong and what to do', detail: '"Error: invalid input" is useless. "Enter a value between 1 and 100" is helpful.', priority: 'high', points: 8 },
+      { id: 'u3', text: 'Empty states, loading states, and edge-case UI are documented where relevant', detail: 'These states are often underdocumented. If a user can encounter it, it should be covered.', priority: 'medium', points: 6 },
+      { id: 'u4', text: 'Tooltips and inline help text are concise and non-redundant', detail: 'Tooltip text should add context not already visible on the label. If it repeats the label, it\'s noise.', priority: 'medium', points: 5 },
+      { id: 'u5', text: 'CTAs and next steps are clearly signposted throughout the document', detail: 'Never leave the user wondering what to do next. End sections and procedures with clear direction.', priority: 'medium', points: 5 },
+    ]
+  },
+];
+
+// State
+let state = {}; // id -> 'checked' | 'na' | null
+let notes = {}; // id -> string
+CHECKLIST.forEach(s => s.items.forEach(i => { state[i.id] = null; notes[i.id] = ''; }));
+
+function buildChecklist() {
+  const container = document.getElementById('checklistContainer');
+  container.innerHTML = '';
+  CHECKLIST.forEach(section => {
+    const sectionEl = document.createElement('div');
+    sectionEl.className = 'cl-section open';
+    sectionEl.id = 'section-' + section.id;
+
+    const checked = section.items.filter(i => state[i.id] === 'checked').length;
+    const na = section.items.filter(i => state[i.id] === 'na').length;
+    const total = section.items.length;
+
+    sectionEl.innerHTML = `
+      <div class="cl-section-header" style="border-left-color:${section.color}" onclick="toggleSection('${section.id}')">
+        <span class="section-icon">${section.icon}</span>
+        <span class="section-name">${section.name}</span>
+        <div class="section-meta">
+          <span class="section-progress">${checked}/${total - na}</span>
+          <span class="section-weight">Weight: ${section.weight}%</span>
+          <span class="section-chevron">▾</span>
+        </div>
+      </div>
+      <div class="cl-items" id="items-${section.id}">
+        ${section.items.map(item => buildItem(item)).join('')}
+      </div>
+    `;
+    container.appendChild(sectionEl);
+  });
+  updateProgress();
+}
+
+function buildItem(item) {
+  const s = state[item.id];
+  const n = notes[item.id] || '';
+  return `
+    <div class="cl-item ${s === 'checked' ? 'checked' : s === 'na' ? 'na' : ''}" id="item-${item.id}" onclick="toggleItem(event, '${item.id}')">
+      <div class="cl-checkbox"></div>
+      <div class="cl-item-content">
+        <div class="cl-item-text">${item.text}</div>
+        <div class="cl-item-detail">${item.detail}</div>
+        <div style="display:flex;gap:0.5rem;align-items:center;margin-top:0.4rem">
+          <span class="na-toggle" onclick="event.stopPropagation();toggleNA('${item.id}')">${s === 'na' ? 'Unmark N/A' : 'Mark N/A'}</span>
+          <span class="notes-toggle" onclick="event.stopPropagation();toggleNotes('notes-${item.id}')">📝 ${n ? 'Edit note' : 'Add note'}</span>
+        </div>
+        <div class="notes-row ${n ? 'open' : ''}" id="notes-${item.id}" onclick="event.stopPropagation()">
+          <textarea class="notes-input" placeholder="Add inline feedback or notes for the writer…" onchange="saveNote('${item.id}', this.value)">${n}</textarea>
+        </div>
+      </div>
+      <div class="item-badges">
+        <span class="badge-priority p-${item.priority}">${item.priority}</span>
+        <span class="badge-points">${item.points}pts</span>
+      </div>
+    </div>
+  `;
+}
+
+function toggleSection(id) {
+  const sec = document.getElementById('section-' + id);
+  sec.classList.toggle('open');
+}
+
+function toggleItem(e, id) {
+  if (e.target.classList.contains('na-toggle') || e.target.classList.contains('notes-toggle') || e.target.closest('.notes-row')) return;
+  if (state[id] === 'na') return;
+  state[id] = state[id] === 'checked' ? null : 'checked';
+  rebuildItem(id);
+  updateProgress();
+}
+
+function toggleNA(id) {
+  state[id] = state[id] === 'na' ? null : 'na';
+  rebuildItem(id);
+  updateProgress();
+}
+
+function toggleNotes(notesId) {
+  const el = document.getElementById(notesId);
+  el.classList.toggle('open');
+}
+
+function saveNote(id, val) {
+  notes[id] = val;
+}
+
+function rebuildItem(id) {
+  const section = CHECKLIST.find(s => s.items.find(i => i.id === id));
+  const item = section.items.find(i => i.id === id);
+  const el = document.getElementById('item-' + id);
+  el.outerHTML = buildItem(item);
+  // update section header count
+  updateSectionHeader(section.id);
+}
+
+function updateSectionHeader(sectionId) {
+  const section = CHECKLIST.find(s => s.id === sectionId);
+  const checked = section.items.filter(i => state[i.id] === 'checked').length;
+  const na = section.items.filter(i => state[i.id] === 'na').length;
+  const total = section.items.length;
+  const prog = document.querySelector(`#section-${sectionId} .section-progress`);
+  if (prog) prog.textContent = `${checked}/${total - na}`;
+}
+
+function calcScore() {
+  let totalWeightedScore = 0;
+  let totalMaxWeighted = 0;
+  CHECKLIST.forEach(section => {
+    const activeItems = section.items.filter(i => state[i.id] !== 'na');
+    const checkedItems = activeItems.filter(i => state[i.id] === 'checked');
+    const sectionMax = activeItems.reduce((a, i) => a + i.points, 0);
+    const sectionScore = checkedItems.reduce((a, i) => a + i.points, 0);
+    if (sectionMax > 0) {
+      totalWeightedScore += (sectionScore / sectionMax) * section.weight;
+      totalMaxWeighted += section.weight;
+    }
+  });
+  return totalMaxWeighted > 0 ? Math.round((totalWeightedScore / totalMaxWeighted) * 100) : 0;
+}
+
+function updateProgress() {
+  const allItems = CHECKLIST.flatMap(s => s.items);
+  const total = allItems.length;
+  const checked = allItems.filter(i => state[i.id] === 'checked').length;
+  const na = allItems.filter(i => state[i.id] === 'na').length;
+  const active = total - na;
+  const remaining = active - checked;
+  const pct = active > 0 ? Math.round((checked / active) * 100) : 0;
+  const score = calcScore();
+
+  document.getElementById('progText').textContent = `${checked} / ${active} items`;
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('statChecked').textContent = checked;
+  document.getElementById('statNA').textContent = na;
+  document.getElementById('statRemaining').textContent = remaining;
+  document.getElementById('statScore').textContent = score + '%';
+
+  // update ring
+  const circumference = 138.2;
+  const offset = circumference - (score / 100) * circumference;
+  const ring = document.getElementById('scoreRing');
+  ring.style.strokeDashoffset = offset;
+  ring.style.stroke = score >= 80 ? '#3fb950' : score >= 60 ? '#e3b341' : '#f78166';
+  document.getElementById('scoreNum').textContent = score + '%';
+  document.getElementById('scoreLabel').textContent = score >= 80 ? 'Ready to publish' : score >= 60 ? 'Needs revision' : score > 0 ? 'Significant gaps' : 'Not started';
+}
+
+function generateReport() {
+  const score = calcScore();
+  const allItems = CHECKLIST.flatMap(s => s.items);
+  const checked = allItems.filter(i => state[i.id] === 'checked').length;
+  const na = allItems.filter(i => state[i.id] === 'na').length;
+  const total = allItems.length;
+  const critical = allItems.filter(i => i.priority === 'critical' && state[i.id] !== 'checked' && state[i.id] !== 'na');
+
+  const gridHTML = `
+    <div class="result-box"><div class="result-val ${score >= 80 ? 'result-green' : score >= 60 ? 'result-yellow' : 'result-red'}">${score}%</div><div class="result-lbl">Readiness Score</div></div>
+    <div class="result-box"><div class="result-val result-green">${checked}</div><div class="result-lbl">Passed</div></div>
+    <div class="result-box"><div class="result-val ${critical.length > 0 ? 'result-red' : 'result-green'}">${critical.length}</div><div class="result-lbl">Critical Gaps</div></div>
+    <div class="result-box"><div class="result-val">${na}</div><div class="result-lbl">Marked N/A</div></div>
+    <div class="result-box"><div class="result-val">${total - checked - na}</div><div class="result-lbl">Remaining</div></div>
+  `;
+
+  const sectionHTML = CHECKLIST.map(section => {
+    const active = section.items.filter(i => state[i.id] !== 'na');
+    const done = active.filter(i => state[i.id] === 'checked');
+    const maxPts = active.reduce((a, i) => a + i.points, 0);
+    const gotPts = done.reduce((a, i) => a + i.points, 0);
+    const pct = maxPts > 0 ? Math.round((gotPts / maxPts) * 100) : 100;
+    return `<div class="section-score-row">
+      <span class="section-score-name">${section.icon} ${section.name}</span>
+      <div class="section-score-bar-wrap"><div class="section-score-bar" style="width:${pct}%;background:${pct>=80?'#3fb950':pct>=60?'#e3b341':'#f78166'}"></div></div>
+      <span class="section-score-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('resultsGrid').innerHTML = gridHTML;
+  document.getElementById('sectionScores').innerHTML = `<div style="margin-bottom:1rem;font-size:0.78rem;color:rgba(255,255,255,0.5);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.1em">Section Breakdown</div>` + sectionHTML;
+  const panel = document.getElementById('resultsPanel');
+  panel.classList.add('show');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function saveProgress() {
+  const data = { state, notes, meta: {
+    reviewer: document.getElementById('meta-reviewer').value,
+    writer: document.getElementById('meta-writer').value,
+    date: document.getElementById('meta-date').value,
+    doc: document.getElementById('meta-doc').value,
+    email: document.getElementById('meta-email').value,
+    type: document.getElementById('meta-type').value,
+    reviewType: document.getElementById('meta-review-type').value,
+  }};
+  try {
+    localStorage.setItem('docReviewChecklist', JSON.stringify(data));
+  } catch(e) {}
+  const toast = document.getElementById('saveToast');
+  toast.style.display = 'block';
+  setTimeout(() => toast.style.display = 'none', 2500);
+}
+
+function loadProgress() {
+  try {
+    const saved = localStorage.getItem('docReviewChecklist');
+    if (!saved) return;
+    const data = JSON.parse(saved);
+    state = { ...state, ...data.state };
+    notes = { ...notes, ...data.notes };
+    if (data.meta) {
+      Object.entries(data.meta).forEach(([k, v]) => {
+        const el = document.getElementById('meta-' + k) || document.getElementById('meta-' + k.replace(/([A-Z])/g, '-$1').toLowerCase());
+        if (el) el.value = v;
+      });
+    }
+  } catch(e) {}
+}
+
+function clearAll() {
+  if (!confirm('Clear all progress? This cannot be undone.')) return;
+  CHECKLIST.forEach(s => s.items.forEach(i => { state[i.id] = null; notes[i.id] = ''; }));
+  try { localStorage.removeItem('docReviewChecklist'); } catch(e) {}
+  buildChecklist();
+  document.getElementById('resultsPanel').classList.remove('show');
+}
+
+function exportJSON() {
+  const rubric = {
+    name: 'Doc Review Checklist — Anubhuti Khare',
+    version: '1.0',
+    generated: new Date().toISOString(),
+    meta: {
+      reviewer: document.getElementById('meta-reviewer').value,
+      writer: document.getElementById('meta-writer').value,
+      document: document.getElementById('meta-doc').value,
+      date: document.getElementById('meta-date').value,
+    },
+    ai_prompt: 'Act as a Senior Technical Editor. Use the following JSON rubric to audit the provided technical documentation. For each checkpoint, indicate whether it passes or fails, and provide specific rewrites or suggestions for any failed items.',
+    sections: CHECKLIST.map(s => ({
+      id: s.id, name: s.name, weight: s.weight,
+      checkpoints: s.items.map(i => ({
+        id: i.id, text: i.text, detail: i.detail,
+        priority: i.priority, points: i.points,
+        status: state[i.id] || 'pending',
+        notes: notes[i.id] || ''
+      }))
+    }))
+  };
+  const blob = new Blob([JSON.stringify(rubric, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'doc-review-rubric.json';
+  a.click();
+}
+
+function exportPDF() {
+  generateReport();
+  setTimeout(() => window.print(), 300);
+}
+
+// Init
+document.getElementById('meta-date').value = new Date().toISOString().split('T')[0];
+loadProgress();
+buildChecklist();
+</script>
+</body>
+</html>
