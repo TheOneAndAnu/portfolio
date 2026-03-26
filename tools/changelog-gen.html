@@ -7,296 +7,255 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bricolage+Grotesque:wght@400;600;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #faf7f2; --ink: #1a1208; --surface: #fff;
-    --saffron: #f4720b; --rose: #e8456a; --teal: #0d9488;
-    --green: #16a34a; --yellow: #d97706; --purple: #7c3aed;
-    --muted: #8a7a6a; --border: rgba(0,0,0,0.08); --cream: #fef3e2;
+    --bg:#0d1117;--surface:#161b22;--surface2:#21262d;
+    --border:#30363d;--text:#e6edf3;--muted:#8b949e;
+    --green:#3fb950;--blue:#58a6ff;--orange:#f78166;
+    --yellow:#e3b341;--purple:#bc8cff;--saffron:#f4720b;
   }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--ink); font-family: 'Bricolage Grotesque', sans-serif; min-height: 100vh; }
-
-  header {
-    background: var(--ink); color: white; padding: 1rem 2rem;
-    display: flex; align-items: center; gap: 1.5rem;
-    border-bottom: 3px solid var(--marigold, #f9c01e);
-  }
-  .back { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.8rem; }
-  .back:hover { color: var(--saffron); }
-  .tool-logo { font-size: 1.1rem; font-weight: 800; }
-  .tool-logo span { color: #f9c01e; }
-  .tool-sub { font-size: 0.75rem; color: rgba(255,255,255,0.45); font-family: 'DM Mono', monospace; margin-left: auto; }
-
-  .main { max-width: 960px; margin: 0 auto; padding: 2.5rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
-
-  .panel-title { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-family: 'DM Mono', monospace; margin-bottom: 0.75rem; }
-
-  .meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
-  label { display: block; font-size: 0.72rem; font-weight: 700; color: var(--muted); margin-bottom: 0.3rem; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; }
-  input, select {
-    width: 100%; background: var(--surface); border: 1.5px solid var(--border);
-    border-radius: 6px; padding: 0.55rem 0.75rem; font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 0.85rem; color: var(--ink); outline: none; transition: border-color 0.15s;
-  }
-  input:focus, select:focus { border-color: var(--saffron); }
-
-  textarea {
-    width: 100%; background: var(--surface); border: 1.5px solid var(--border);
-    border-radius: 8px; padding: 1rem; font-family: 'DM Mono', monospace;
-    font-size: 0.83rem; line-height: 1.75; resize: vertical; min-height: 280px;
-    outline: none; color: var(--ink); transition: border-color 0.15s;
-  }
-  textarea:focus { border-color: var(--saffron); }
-
-  .hint { font-size: 0.75rem; color: var(--muted); line-height: 1.5; margin-top: 0.5rem; }
-  .hint code { background: var(--cream); padding: 0.1rem 0.3rem; border-radius: 3px; font-family: 'DM Mono', monospace; font-size: 0.72rem; }
-
-  .gen-btn {
-    background: var(--saffron); color: white; border: none;
-    padding: 0.75rem 1.75rem; border-radius: 6px; cursor: pointer;
-    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 0.9rem;
-    transition: opacity 0.2s; margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem;
-    width: 100%; justify-content: center;
-  }
-  .gen-btn:hover { opacity: 0.85; }
-
-  .sample-btns { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
-  .sample-btn {
-    flex: 1; background: transparent; border: 1.5px solid var(--border); color: var(--muted);
-    padding: 0.5rem 0.75rem; border-radius: 6px; cursor: pointer;
-    font-family: 'Bricolage Grotesque', sans-serif; font-size: 0.78rem; font-weight: 600;
-    transition: all 0.15s;
-  }
-  .sample-btn:hover { border-color: var(--teal); color: var(--teal); }
-
-  /* OUTPUT */
-  .output-panel { position: sticky; top: 1.5rem; }
-  .output-box {
-    background: var(--surface); border: 1.5px solid var(--border);
-    border-radius: 12px; overflow: hidden;
-  }
-  .output-bar {
-    background: var(--ink); padding: 0.75rem 1.2rem;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .output-bar-title { color: white; font-family: 'DM Mono', monospace; font-size: 0.78rem; }
-  .copy-btn {
-    background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);
-    padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer;
-    font-family: 'DM Mono', monospace; font-size: 0.7rem; transition: background 0.15s;
-  }
-  .copy-btn:hover { background: var(--saffron); border-color: transparent; }
-
-  .output-preview { padding: 1.5rem; min-height: 300px; }
-  .empty-out { color: var(--muted); font-size: 0.88rem; line-height: 1.7; text-align: center; padding: 3rem 1rem; }
-  .empty-out .e-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
-
-  /* Rendered changelog */
-  .cl-header { margin-bottom: 1.5rem; }
-  .cl-version { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 0.2rem; }
-  .cl-date { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); }
-  .cl-section { margin-bottom: 1.2rem; }
-  .cl-section-title {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    font-size: 0.7rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
-    padding: 0.2rem 0.65rem; border-radius: 100px; margin-bottom: 0.6rem;
-    font-family: 'DM Mono', monospace;
-  }
-  .cl-new { background: rgba(22,163,74,0.12); color: var(--green); }
-  .cl-improved { background: rgba(13,148,136,0.12); color: var(--teal); }
-  .cl-fixed { background: rgba(124,58,237,0.12); color: var(--purple); }
-  .cl-deprecated { background: rgba(217,119,6,0.12); color: var(--yellow); }
-  .cl-breaking { background: rgba(232,69,106,0.12); color: var(--rose); }
-
-  .cl-list { list-style: none; }
-  .cl-list li { font-size: 0.88rem; line-height: 1.7; padding: 0.3rem 0 0.3rem 1.3rem; position: relative; color: #3d3226; border-bottom: 1px solid var(--border); }
-  .cl-list li:last-child { border-bottom: none; }
-  .cl-list li::before { content: '•'; position: absolute; left: 0; color: var(--muted); }
-
-  .raw-md {
-    font-family: 'DM Mono', monospace; font-size: 0.78rem; line-height: 1.8;
-    white-space: pre; overflow-x: auto; color: #3d3226;
-    display: none; padding: 1rem; background: #faf7f2; border-top: 1px solid var(--border);
-  }
-  .view-toggle {
-    background: transparent; border: none; color: rgba(255,255,255,0.6);
-    font-family: 'DM Mono', monospace; font-size: 0.7rem; cursor: pointer;
-    transition: color 0.15s;
-  }
-  .view-toggle:hover { color: white; }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Bricolage Grotesque',sans-serif;min-height:100vh}
+  header{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;gap:1.5rem;position:sticky;top:0;z-index:100}
+  .back{color:var(--muted);text-decoration:none;font-size:.8rem;transition:color .15s}
+  .back:hover{color:var(--saffron)}
+  .tool-logo{font-size:1.1rem;font-weight:800}
+  .tool-logo span{color:var(--saffron)}
+  .tool-tagline{font-size:.72rem;color:var(--muted);font-family:'DM Mono',monospace;margin-left:auto;font-style:italic}
+  .page{display:grid;grid-template-columns:1fr 1fr;height:calc(100vh - 57px)}
+  .left-panel{border-right:1px solid var(--border);display:flex;flex-direction:column}
+  .panel-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .panel-title{font-family:'DM Mono',monospace;font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+  .meta-strip{padding:.9rem 1.5rem;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr 1fr;gap:.65rem}
+  .meta-field label{display:block;font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
+  .meta-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:.4rem .6rem;color:var(--text);font-family:'DM Mono',monospace;font-size:.8rem;outline:none;transition:border-color .15s}
+  .meta-input:focus{border-color:var(--saffron)}
+  .input-area{flex:1;display:flex;flex-direction:column;padding:1rem 1.5rem;gap:.75rem;overflow:hidden}
+  .input-hint{background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.2);border-radius:6px;padding:.6rem .9rem;font-family:'DM Mono',monospace;font-size:.7rem;color:var(--blue);line-height:1.65}
+  .input-hint strong{color:rgba(255,255,255,.8)}
+  .input-hint code{background:rgba(255,255,255,.08);padding:.05rem .3rem;border-radius:3px}
+  textarea{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;color:var(--text);font-family:'DM Mono',monospace;font-size:.82rem;line-height:1.75;resize:none;outline:none;transition:border-color .15s}
+  textarea:focus{border-color:var(--saffron)}
+  .bottom-bar{padding:.9rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:.65rem;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:6px;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.8rem;border:1px solid transparent;transition:all .15s}
+  .btn-primary{background:var(--saffron);color:white}
+  .btn-primary:hover{opacity:.85}
+  .btn-ghost{background:transparent;border-color:var(--border);color:var(--muted)}
+  .btn-ghost:hover{border-color:var(--muted);color:var(--text)}
+  .right-panel{display:flex;flex-direction:column;overflow:hidden}
+  .output-header{padding:.9rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.9rem}
+  .output-title{font-family:'DM Mono',monospace;font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);flex:1}
+  .toggle-wrap{display:flex;align-items:center;gap:.5rem}
+  .toggle-label{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted)}
+  .toggle-label.active{color:var(--text);font-weight:700}
+  .toggle-track{width:38px;height:20px;background:var(--surface2);border:1px solid var(--border);border-radius:100px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+  .toggle-track.on{background:var(--saffron);border-color:var(--saffron)}
+  .toggle-thumb{width:14px;height:14px;background:white;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .toggle-track.on .toggle-thumb{transform:translateX(18px)}
+  .copy-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.28rem .7rem;border-radius:4px;cursor:pointer;font-family:'DM Mono',monospace;font-size:.68rem;transition:all .15s}
+  .copy-btn:hover{border-color:var(--saffron);color:var(--saffron)}
+  .view-btn{background:transparent;border:none;color:var(--muted);cursor:pointer;font-family:'DM Mono',monospace;font-size:.68rem;transition:color .15s}
+  .view-btn:hover{color:var(--text)}
+  .output-body{flex:1;overflow-y:auto;padding:1.5rem}
+  .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);text-align:center;gap:1rem}
+  .empty-icon{font-size:2.8rem;opacity:.4}
+  .empty-text{font-size:.85rem;line-height:1.65;max-width:280px}
+  .cl-header{margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+  .cl-version{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:.2rem}
+  .cl-date{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted)}
+  .mode-badge{display:inline-flex;align-items:center;font-family:'DM Mono',monospace;font-size:.58rem;font-weight:700;padding:.12rem .45rem;border-radius:100px;margin-left:.7rem;text-transform:uppercase;letter-spacing:.08em}
+  .badge-int{background:rgba(247,129,102,.15);color:var(--orange);border:1px solid rgba(247,129,102,.3)}
+  .badge-ext{background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.3)}
+  .cl-section{margin-bottom:1.2rem}
+  .cl-sec-title{font-family:'DM Mono',monospace;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;display:flex;align-items:center;gap:.45rem}
+  .sec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+  .cl-list{list-style:none;display:flex;flex-direction:column;gap:.3rem}
+  .cl-list li{font-size:.87rem;line-height:1.7;padding-left:1.15rem;position:relative;color:#c9d1d9}
+  .cl-list li::before{content:'–';position:absolute;left:0;color:var(--muted)}
+  .jira-tag{display:inline-block;background:rgba(88,166,255,.12);color:var(--blue);border:1px solid rgba(88,166,255,.25);font-family:'DM Mono',monospace;font-size:.58rem;padding:.08rem .35rem;border-radius:3px;margin-right:.3rem;vertical-align:middle}
+  .int-warning{margin-top:1.5rem;padding:.7rem 1rem;background:rgba(247,129,102,.07);border:1px solid rgba(247,129,102,.15);border-radius:6px;font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted)}
+  .raw-md{background:#010409;border:1px solid var(--border);border-radius:8px;padding:1.2rem;font-family:'DM Mono',monospace;font-size:.77rem;line-height:1.8;white-space:pre-wrap;color:#c9d1d9;display:none;margin-top:1rem}
+  .raw-md.show{display:block}
 </style>
 </head>
 <body>
-
 <header>
   <a href="../index.html" class="back">← Portfolio</a>
   <div class="tool-logo">Changelog<span>.</span>Gen</div>
-  <div class="tool-sub">Turn dev notes into clean release notes</div>
+  <div class="tool-tagline">"Turns chaos into something users can actually understand."</div>
 </header>
-
-<div class="main">
-  <!-- INPUT -->
-  <div>
-    <div class="panel-title">Release Information</div>
-    <div class="meta-row">
-      <div>
-        <label>Version</label>
-        <input type="text" id="version" placeholder="v2.4.0" />
-      </div>
-      <div>
-        <label>Release Date</label>
-        <input type="date" id="releaseDate" />
-      </div>
+<div class="page">
+  <div class="left-panel">
+    <div class="panel-header"><span class="panel-title">Raw Dev Notes / Jira Titles</span></div>
+    <div class="meta-strip">
+      <div class="meta-field"><label>Version</label><input class="meta-input" id="mv" placeholder="v2.4.0"/></div>
+      <div class="meta-field"><label>Product</label><input class="meta-input" id="mp" placeholder="Hevodata"/></div>
+      <div class="meta-field"><label>Date</label><input class="meta-input" id="md" type="date"/></div>
     </div>
-    <div style="margin-bottom:1.2rem">
-      <label>Product / Project Name</label>
-      <input type="text" id="product" placeholder="DataPipeline Pro" />
+    <div class="input-area">
+      <div class="input-hint"><strong>Paste anything.</strong> Jira tickets, "fixed bug", whatever the dev wrote at 11pm — it handles the mess.<br>Optional prefix: <code>[new]</code> <code>[fix]</code> <code>[improved]</code> <code>[breaking]</code> <code>[security]</code>. One item per line.</div>
+      <textarea id="rawInput" placeholder="fixed bug&#10;HEV-2341: pipeline fails silently on expired creds&#10;improved performance&#10;FEAT-892 Add bulk export&#10;security patch applied&#10;ENG-104 remove deprecated v1 endpoints&#10;users were confused by the onboarding modal so we rewrote it&#10;perf improvement — queries 40% faster on large datasets"></textarea>
     </div>
-
-    <div class="panel-title" style="margin-top:1.5rem">Raw Dev Notes</div>
-    <textarea id="devNotes" placeholder="Paste your raw dev notes here. One item per line. Prefix with tags to categorize:
-
-[new] Added bulk export functionality
-[fix] Fixed OAuth timeout on long sessions
-[improved] Faster load times for large datasets
-[breaking] Removed legacy v1 endpoints
-[deprecated] /api/v1/users will be removed in v3
-Added dark mode to dashboard
-Fixed crash when uploading empty CSV
-Rewrote the onboarding flow
-Performance improvements across board"></textarea>
-    <div class="hint">
-      Prefix with <code>[new]</code>, <code>[fix]</code>, <code>[improved]</code>, <code>[breaking]</code>, or <code>[deprecated]</code>. Unprefixed items are auto-classified.
+    <div class="bottom-bar">
+      <button class="btn btn-primary" onclick="generate()">✦ Generate Changelog</button>
+      <button class="btn btn-ghost" onclick="loadSample()">Load Sample</button>
+      <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
     </div>
-    <div class="sample-btns">
-      <button class="sample-btn" onclick="loadSample(1)">Sample: SaaS App</button>
-      <button class="sample-btn" onclick="loadSample(2)">Sample: API Release</button>
-    </div>
-    <button class="gen-btn" onclick="generate()">✦ Generate Changelog</button>
   </div>
-
-  <!-- OUTPUT -->
-  <div class="output-panel">
-    <div class="output-box">
-      <div class="output-bar">
-        <span class="output-bar-title">📋 changelog.md</span>
-        <div style="display:flex;gap:0.75rem;align-items:center">
-          <button class="view-toggle" onclick="toggleView()">Toggle Markdown</button>
-          <button class="copy-btn" onclick="copyMd()">Copy MD</button>
-        </div>
+  <div class="right-panel">
+    <div class="output-header">
+      <span class="output-title" id="outTitle">Output</span>
+      <button class="view-btn" id="viewBtn" style="display:none" onclick="toggleView()">Show Markdown</button>
+      <div class="toggle-wrap">
+        <span class="toggle-label active" id="lblInt">Internal</span>
+        <div class="toggle-track" id="modeTrack" onclick="toggleMode()"><div class="toggle-thumb"></div></div>
+        <span class="toggle-label" id="lblExt">External</span>
       </div>
-      <div class="output-preview" id="outputPreview">
-        <div class="empty-out">
-          <div class="e-icon">📋</div>
-          <p>Fill in the form and click <strong>Generate Changelog</strong> to produce a clean, formatted release note.</p>
-        </div>
+      <button class="copy-btn" id="copyBtn" style="display:none" onclick="copyMd()">Copy MD</button>
+    </div>
+    <div class="output-body" id="outBody">
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">Paste raw dev notes or Jira titles on the left — "fixed bug", "HEV-2341: thing breaks" — and hit Generate.</div>
       </div>
-      <pre class="raw-md" id="rawMd"></pre>
     </div>
   </div>
 </div>
-
 <script>
-const samples = {
-  1: { version: 'v3.1.0', product: 'DocFlow', notes: `[new] Added bulk export to CSV, PDF and Markdown\n[new] New team collaboration workspace with live cursors\n[improved] Dashboard loads 3x faster for large document sets\n[improved] Search now indexes images and attachments\n[fix] Fixed duplicate notifications when collaborator edits\n[fix] Fixed table rendering bug in Safari\n[fix] Resolved crash on empty template creation\n[deprecated] Classic editor will be removed in v4.0\n[breaking] Removed support for Node.js < 18` },
-  2: { version: 'v2.0.0', product: 'Hevodata API', notes: `[new] Introduced streaming endpoint for real-time pipeline events\n[new] Added rate limit headers to all responses\n[new] New /v2/connectors endpoint with expanded filter support\n[improved] Response time reduced by 40% on /pipelines endpoint\n[improved] Better error messages with actionable fix suggestions\n[fix] Fixed pagination token expiry bug on /events\n[fix] Resolved incorrect 200 status on partial failures\n[breaking] /v1/pipelines deprecated — migrate to /v2/pipelines\n[breaking] Authentication now requires Bearer token format` }
+let isExt=false,showMd=false,lastResult=null,currentMd='';
+const JIRA=/^([A-Z]+-\d+):?\s*/;
+const SAMPLE=`HEV-2341: pipeline fails silently when source credentials expire\nFEAT-892 bulk export to CSV and PDF\nfixed bug where duplicate events were firing on reconnect\nperf — pipeline execution 40% faster on large datasets\nENG-104 remove deprecated v1 endpoints — breaks existing integrations\nupdated onboarding modal copy, users kept missing the skip button\nsecurity: rotate internal signing keys for webhook validation\nminor UI polish on the sources dashboard\nHEV-1198 job queue gets stuck if worker restarts mid-run\nadded dark mode toggle to dashboard settings`;
+const KW={
+  new:['add','new','introduc','launch','creat','support','enabl','feat','implement','built','dark mode','bulk','toggle','export'],
+  fix:['fix','resolv','patch','correct','bug','crash','error','fail','broken','stuck','missing','duplicate','silently'],
+  improved:['improv','enhanc','updat','faster','better','refactor','optimiz','rewrit','perf','speed','polish','minor','copy change','ui'],
+  breaking:['breaking','remov','deprecat','drop support','migrat','v1 endpoint','breaks existing'],
+  security:['security','auth','cred','key','token','signing','rotate','vulnerab'],
 };
-
-let generatedMd = '';
-let showingMd = false;
-
-function loadSample(n) {
-  const s = samples[n];
-  document.getElementById('version').value = s.version;
-  document.getElementById('product').value = s.product;
-  document.getElementById('devNotes').value = s.notes;
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('releaseDate').value = today;
-}
-
-const keywords = {
-  new: ['added', 'new', 'introduce', 'launch', 'create', 'support', 'enable'],
-  fix: ['fix', 'resolve', 'patch', 'correct', 'repair', 'address', 'bug', 'crash', 'error'],
-  improved: ['improve', 'enhance', 'update', 'faster', 'better', 'refactor', 'optimiz', 'rewrite', 'performance', 'load time'],
-  breaking: ['breaking', 'remove', 'deprecat', 'drop support', 'migrate'],
-  deprecated: ['deprecat', 'will be removed', 'legacy', 'old'],
+const SEC_META={
+  new:{label:'✨ New Features',color:'#3fb950'},
+  improved:{label:'🔧 Improvements',color:'#58a6ff'},
+  fix:{label:'🐛 Bug Fixes',color:'#bc8cff'},
+  breaking:{label:'🚨 Breaking Changes',color:'#f78166'},
+  security:{label:'🔒 Security',color:'#e3b341'},
 };
-
-function classify(text) {
-  const lower = text.toLowerCase();
-  const tagMatch = lower.match(/^\[(new|fix|improved|breaking|deprecated)\]/);
-  if (tagMatch) return tagMatch[1];
-  for (const [cat, words] of Object.entries(keywords)) {
-    if (words.some(w => lower.includes(w))) return cat;
-  }
+function getJira(t){const m=t.match(JIRA);return m?m[1]:null}
+function stripJira(t){return t.replace(JIRA,'').trim()}
+function classify(raw){
+  const pfx=raw.match(/^\[(new|fix|improved|breaking|security)\]\s*/i);
+  if(pfx)return pfx[1].toLowerCase();
+  const t=stripJira(raw).replace(/^\[.*?\]\s*/,'').toLowerCase();
+  for(const[cat,words]of Object.entries(KW)){if(words.some(w=>t.includes(w)))return cat}
   return 'improved';
 }
-
-function cleanText(text) {
-  return text.replace(/^\[(new|fix|improved|breaking|deprecated)\]\s*/i, '').trim();
-}
-
-function generate() {
-  const version = document.getElementById('version').value || 'v1.0.0';
-  const product = document.getElementById('product').value || 'My Product';
-  const dateVal = document.getElementById('releaseDate').value;
-  const date = dateVal ? new Date(dateVal).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  const rawNotes = document.getElementById('devNotes').value.trim();
-
-  if (!rawNotes) { alert('Please enter some dev notes.'); return; }
-
-  const lines = rawNotes.split('\n').map(l => l.trim()).filter(Boolean);
-  const categorized = { new: [], improved: [], fix: [], deprecated: [], breaking: [] };
-
-  lines.forEach(line => {
-    const cat = classify(line);
-    categorized[cat].push(cleanText(line));
-  });
-
-  const labels = {
-    new: { label: '✨ New Features', class: 'cl-new', md: '### ✨ New Features' },
-    improved: { label: '🔧 Improvements', class: 'cl-improved', md: '### 🔧 Improvements' },
-    fix: { label: '🐛 Bug Fixes', class: 'cl-fixed', md: '### 🐛 Bug Fixes' },
-    deprecated: { label: '⚠️ Deprecated', class: 'cl-deprecated', md: '### ⚠️ Deprecated' },
-    breaking: { label: '🚨 Breaking Changes', class: 'cl-breaking', md: '### 🚨 Breaking Changes' },
-  };
-
-  let html = `<div class="cl-header"><div class="cl-version">${product} ${version}</div><div class="cl-date">Released ${date}</div></div>`;
-  let md = `# ${product} ${version}\n\n**Released:** ${date}\n\n`;
-
-  for (const [cat, items] of Object.entries(categorized)) {
-    if (!items.length) continue;
-    const l = labels[cat];
-    html += `<div class="cl-section"><span class="cl-section-title ${l.class}">${l.label}</span><ul class="cl-list">`;
-    md += `${l.md}\n\n`;
-    items.forEach(item => {
-      const cap = item.charAt(0).toUpperCase() + item.slice(1);
-      const final = cap.endsWith('.') ? cap : cap + '.';
-      html += `<li>${final}</li>`;
-      md += `- ${final}\n`;
-    });
-    html += `</ul></div>`;
-    md += '\n';
+const REWRITES=[
+  [/pipeline fails? silently (when|if|on) (.*)/i,'Fixed an issue where pipeline jobs failed without error when $2'],
+  [/duplicate events? (were |)(firing|triggering)(.*)/i,'Fixed an issue where duplicate events were triggered unexpectedly'],
+  [/perf.*?(\d+)%?\s*faster/i,'Improved query and pipeline execution speed by up to $1%'],
+  [/(\d+)%?\s*faster/i,'Improved performance by up to $1%'],
+  [/job queue gets? stuck(.*)/i,'Fixed an issue where the job queue could stall during worker restarts'],
+  [/signing keys?(.*)/i,'Enhanced webhook security with updated key validation'],
+  [/rotate(.*?)(key|token|cred)(.*)/i,'Rotated internal signing keys for improved webhook security'],
+  [/onboarding modal(.*)/i,'Improved the onboarding experience with clearer navigation and guidance'],
+  [/users? (kept|were) (missing|confused)(.*)/i,'Improved UI clarity and copy based on user feedback'],
+  [/remove.*?deprecated.*?v1(.*)/i,'Removed deprecated v1 API endpoints — see migration guide for details'],
+  [/remove.*?deprecated(.*)/i,'Removed deprecated functionality'],
+  [/bulk export(.*)/i,'Added bulk export support for CSV and PDF formats'],
+  [/dark mode(.*)/i,'Added dark mode support across the dashboard'],
+  [/(updated|rewrote|rewrit)(.*?)(copy|modal|ui|text)(.*)/i,'Improved interface clarity and copy throughout the product'],
+  [/security[: ](.*)/i,'Applied security improvements to internal systems'],
+  [/minor(.*?)(ui|copy|polish)(.*)/i,'Made minor visual and copy improvements across the interface'],
+];
+function humanize(raw,ext){
+  const jira=getJira(raw);
+  let t=raw.replace(/^\[(new|fix|improved|breaking|security)\]\s*/i,'').replace(JIRA,'').trim();
+  if(!ext){
+    const c=t.charAt(0).toUpperCase()+t.slice(1);
+    return{text:c.endsWith('.')?c:c+'.',jira};
   }
-
-  generatedMd = md;
-  document.getElementById('outputPreview').innerHTML = html;
-  document.getElementById('rawMd').textContent = md;
+  for(const[pat,rep]of REWRITES){
+    if(pat.test(t)){
+      let o=t.replace(pat,rep);
+      o=o.charAt(0).toUpperCase()+o.slice(1);
+      return{text:o.endsWith('.')?o:o+'.',jira:null};
+    }
+  }
+  let c=t.replace(/^fix(ed)?\s+/i,'Fixed an issue where ')
+    .replace(/^improv(e|ed)?\s+/i,'Improved ')
+    .replace(/^add(ed)?\s+/i,'Added ')
+    .replace(/^updat(e|ed)?\s+/i,'Updated ');
+  c=c.charAt(0).toUpperCase()+c.slice(1);
+  return{text:c.endsWith('.')?c:c+'.',jira:null};
 }
-
-function toggleView() {
-  showingMd = !showingMd;
-  document.getElementById('outputPreview').style.display = showingMd ? 'none' : 'block';
-  document.getElementById('rawMd').style.display = showingMd ? 'block' : 'none';
+function generate(){
+  const raw=document.getElementById('rawInput').value.trim();
+  if(!raw){alert('Add some notes first.');return}
+  const v=document.getElementById('mv').value||'v1.0.0';
+  const p=document.getElementById('mp').value||'Product';
+  const dv=document.getElementById('md').value;
+  const date=dv?new Date(dv+'T12:00:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}):new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);
+  const cat={new:[],improved:[],fix:[],breaking:[],security:[]};
+  lines.forEach(l=>cat[classify(l)].push(l));
+  lastResult={v,p,date,cat};
+  showMd=false;
+  render();
 }
-
-function copyMd() {
-  if (!generatedMd) { alert('Generate a changelog first.'); return; }
-  navigator.clipboard.writeText(generatedMd).then(() => {
-    const btn = document.querySelector('.copy-btn');
-    btn.textContent = '✓ Copied!';
-    setTimeout(() => btn.textContent = 'Copy MD', 2000);
+function render(){
+  if(!lastResult)return;
+  const{v,p,date,cat}=lastResult;
+  const ext=isExt;
+  let html=`<div class="cl-header"><div class="cl-version">${p} ${v}<span class="mode-badge ${ext?'badge-ext':'badge-int'}">${ext?'● External':'● Internal'}</span></div><div class="cl-date">Released ${date}</div></div>`;
+  let md=`# ${p} ${v}\n\n**Released:** ${date}  \n_${ext?'External — User-facing':'Internal — Full detail'}_\n\n`;
+  for(const[c,items]of Object.entries(cat)){
+    if(!items.length)continue;
+    const m=SEC_META[c];
+    html+=`<div class="cl-section"><div class="cl-sec-title"><span class="sec-dot" style="background:${m.color}"></span>${m.label}</div><ul class="cl-list">`;
+    md+=`### ${m.label}\n\n`;
+    items.forEach(item=>{
+      const{text,jira}=humanize(item,ext);
+      const jh=(!ext&&jira)?`<span class="jira-tag">${jira}</span>`:'';
+      const jm=(!ext&&jira)?`\`${jira}\` `:'';
+      html+=`<li>${jh}${text}</li>`;
+      md+=`- ${jm}${text}\n`;
+    });
+    html+=`</ul></div>`;
+    md+='\n';
+  }
+  if(!ext)html+=`<div class="int-warning">⚠ Internal version — not for public release. Toggle to External to generate the user-facing changelog.</div>`;
+  currentMd=md;
+  document.getElementById('outBody').innerHTML=html+`<div class="raw-md${showMd?' show':''}" id="rawMdEl">${esc(md)}</div>`;
+  document.getElementById('outTitle').textContent=ext?'External Changelog':'Internal Changelog';
+  document.getElementById('viewBtn').style.display='inline-block';
+  document.getElementById('viewBtn').textContent=showMd?'Show Preview':'Show Markdown';
+  document.getElementById('copyBtn').style.display='inline-block';
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function toggleMode(){
+  isExt=!isExt;
+  document.getElementById('modeTrack').classList.toggle('on',isExt);
+  document.getElementById('lblInt').classList.toggle('active',!isExt);
+  document.getElementById('lblExt').classList.toggle('active',isExt);
+  if(lastResult)render();
+}
+function toggleView(){showMd=!showMd;if(lastResult)render()}
+function copyMd(){
+  navigator.clipboard.writeText(currentMd).then(()=>{
+    const b=document.getElementById('copyBtn');b.textContent='✓ Copied!';
+    setTimeout(()=>b.textContent='Copy MD',2000);
   });
 }
+function loadSample(){
+  document.getElementById('rawInput').value=SAMPLE;
+  document.getElementById('mv').value='v3.2.0';
+  document.getElementById('mp').value='Hevodata';
+  document.getElementById('md').value=new Date().toISOString().split('T')[0];
+}
+function clearAll(){
+  document.getElementById('rawInput').value='';lastResult=null;showMd=false;
+  document.getElementById('outBody').innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Paste raw dev notes on the left and hit Generate.</div></div>`;
+  document.getElementById('viewBtn').style.display='none';
+  document.getElementById('copyBtn').style.display='none';
+}
+document.getElementById('md').value=new Date().toISOString().split('T')[0];
 </script>
 </body>
 </html>
