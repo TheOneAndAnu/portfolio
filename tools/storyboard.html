@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Storyboard Generator — Anubhuti Khare</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bricolage+Grotesque:wght@400;600;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#faf7f2;--ink:#1a1208;--surface:#fff;--saffron:#f4720b;--rose:#e8456a;--teal:#0d9488;--green:#16a34a;--yellow:#d97706;--purple:#7c3aed;--muted:#8a7a6a;--border:rgba(0,0,0,.08);--cream:#fef3e2}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque',sans-serif;min-height:100vh}
+  header{background:var(--ink);color:white;padding:1rem 2rem;display:flex;align-items:center;gap:1.5rem;border-bottom:3px solid var(--teal);position:sticky;top:0;z-index:100}
+  .back{color:rgba(255,255,255,.5);text-decoration:none;font-size:.8rem;transition:color .15s}
+  .back:hover{color:var(--saffron)}
+  .tool-logo{font-size:1.1rem;font-weight:800}
+  .tool-logo span{color:var(--teal)}
+  .tool-tagline{font-size:.72rem;color:rgba(255,255,255,.45);font-family:'DM Mono',monospace;margin-left:auto;font-style:italic}
+  .page{max-width:860px;margin:0 auto;padding:2rem 2rem 5rem}
+  .input-section{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:2rem}
+  .input-section h2{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:.25rem}
+  .input-section p{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+  label{display:block;font-family:'DM Mono',monospace;font-size:.62rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+  input,select{width:100%;border:1.5px solid var(--border);border-radius:6px;padding:.55rem .75rem;font-family:'Bricolage Grotesque',sans-serif;font-size:.85rem;color:var(--ink);background:var(--bg);outline:none;transition:border-color .15s}
+  input:focus,select:focus{border-color:var(--saffron);background:white}
+  textarea.main-ta{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:1rem;font-family:'DM Mono',monospace;font-size:.82rem;line-height:1.75;resize:vertical;min-height:180px;background:var(--bg);color:var(--ink);outline:none;transition:border-color .15s;margin-bottom:1rem}
+  textarea.main-ta:focus{border-color:var(--saffron);background:white}
+  .hint-box{background:var(--cream);border-left:3px solid var(--saffron);border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:.78rem;color:#5a4e42;line-height:1.65;margin-bottom:1rem}
+  .actions{display:flex;gap:.75rem;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:.4rem;padding:.65rem 1.3rem;border-radius:6px;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.84rem;border:1.5px solid transparent;transition:all .15s}
+  .btn-primary{background:var(--saffron);color:white}
+  .btn-primary:hover{opacity:.85}
+  .btn-teal{background:var(--teal);color:white}
+  .btn-teal:hover{opacity:.85}
+  .btn-ghost{background:transparent;border-color:var(--border);color:var(--muted)}
+  .btn-ghost:hover{border-color:var(--ink);color:var(--ink)}
+
+  /* STORYBOARD OUTPUT */
+  #storyboard{display:none}
+  .sb-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+  .sb-title{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700}
+  .sb-meta{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);margin-top:.3rem}
+  .sb-stats{display:flex;gap:1rem}
+  .sb-stat{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.5rem 1rem;text-align:center}
+  .sb-stat-val{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--saffron)}
+  .sb-stat-lbl{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-family:'DM Mono',monospace}
+
+  .scene-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;margin-bottom:1.25rem;overflow:hidden;transition:box-shadow .2s}
+  .scene-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.08)}
+  .scene-header{display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:center;padding:1.1rem 1.4rem;border-bottom:1px solid var(--border)}
+  .scene-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-weight:700;font-size:.8rem;flex-shrink:0}
+  .scene-type-label{font-weight:800;font-size:.95rem;margin-bottom:.15rem}
+  .scene-purpose{font-size:.75rem;color:var(--muted);font-family:'DM Mono',monospace}
+  .scene-duration{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);text-align:right;flex-shrink:0}
+
+  .scene-body{padding:1.2rem 1.4rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+  .scene-col-title{font-family:'DM Mono',monospace;font-size:.6rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem}
+  .scene-content{font-size:.87rem;line-height:1.7;color:#3d3226}
+
+  .scene-notes{padding:.9rem 1.4rem;background:var(--bg);border-top:1px solid var(--border)}
+  .alert-row{display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.4rem}
+  .alert-row:last-child{margin-bottom:0}
+  .alert-icon{font-size:.9rem;flex-shrink:0;margin-top:.05rem}
+  .alert-text{font-size:.78rem;line-height:1.55;color:#5a4e42}
+  .alert-text strong{color:var(--ink)}
+  .alert-label{font-family:'DM Mono',monospace;font-size:.6rem;font-weight:700;padding:.1rem .4rem;border-radius:3px;margin-right:.35rem;text-transform:uppercase}
+  .lbl-zoom{background:rgba(13,148,136,.12);color:var(--teal)}
+  .lbl-confuse{background:rgba(232,69,106,.12);color:var(--rose)}
+  .lbl-highlight{background:rgba(244,114,11,.12);color:var(--saffron)}
+  .lbl-animate{background:rgba(124,58,237,.12);color:var(--purple)}
+
+  .export-bar{margin-top:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap}
+  .copy-toast{position:fixed;bottom:2rem;right:2rem;background:var(--green);color:white;padding:.7rem 1.4rem;border-radius:8px;font-weight:700;font-size:.82rem;display:none;z-index:999}
+</style>
+</head>
+<body>
+<header>
+  <a href="../index.html" class="back">← Portfolio</a>
+  <div class="tool-logo">Video<span>.</span>Storyboard</div>
+  <div class="tool-tagline">"If this doc were a video, here's how it would actually make sense."</div>
+</header>
+
+<div class="page">
+  <div class="input-section">
+    <h2>Generate a Video Storyboard</h2>
+    <p>Paste a documentation section or a step-by-step procedure. The tool breaks it into video scenes, flags visually confusing steps, and suggests zoom-ins, highlights, and animations.</p>
+
+    <div class="field-row">
+      <div>
+        <label>Document / Feature Title</label>
+        <input id="docTitle" placeholder="Setting Up a Salesforce Pipeline" />
+      </div>
+      <div>
+        <label>Video Type</label>
+        <select id="vidType">
+          <option value="tutorial">Tutorial / How-to</option>
+          <option value="overview">Product Overview</option>
+          <option value="onboarding">Onboarding Flow</option>
+          <option value="api">API / Developer Guide</option>
+          <option value="troubleshoot">Troubleshooting Guide</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div>
+        <label>Target Audience</label>
+        <select id="audience">
+          <option value="enduser">End User (Non-technical)</option>
+          <option value="admin">Admin / Power User</option>
+          <option value="developer">Developer</option>
+          <option value="mixed">Mixed Audience</option>
+        </select>
+      </div>
+      <div>
+        <label>Estimated Video Length</label>
+        <select id="vidLen">
+          <option value="short">Short (under 2 min)</option>
+          <option value="medium">Medium (2–5 min)</option>
+          <option value="long">Long (5+ min)</option>
+        </select>
+      </div>
+    </div>
+    <div class="hint-box">Paste procedure steps, section content, or even messy notes. The generator maps them to scenes and flags steps where users tend to get lost.</div>
+    <textarea class="main-ta" id="docContent" placeholder="Step 1: Navigate to Sources in the left sidebar.
+Step 2: Click Add Source and search for Salesforce.
+Step 3: Enter your Salesforce credentials including the consumer key and consumer secret.
+Step 4: Select the objects you want to sync. You can choose multiple objects.
+Step 5: Configure the sync frequency. Options are every 15 minutes, hourly, or daily.
+Step 6: Click Save and Activate. The pipeline will begin its first sync immediately."></textarea>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="generate()">🎬 Generate Storyboard</button>
+      <button class="btn btn-ghost" onclick="loadSample()">Load Sample</button>
+      <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
+    </div>
+  </div>
+
+  <div id="storyboard">
+    <div class="sb-header">
+      <div>
+        <div class="sb-title" id="sbTitle"></div>
+        <div class="sb-meta" id="sbMeta"></div>
+      </div>
+      <div class="sb-stats" id="sbStats"></div>
+    </div>
+    <div id="scenesContainer"></div>
+    <div class="export-bar">
+      <button class="btn btn-teal" onclick="exportMd()">⬇ Export as Markdown</button>
+      <button class="btn btn-ghost" onclick="window.print()">🖨 Print Storyboard</button>
+    </div>
+  </div>
+</div>
+<div class="copy-toast" id="toast">✓ Exported!</div>
+
+<script>
+const SAMPLE_DOC=`Step 1: Navigate to Sources in the left sidebar.
+Step 2: Click Add Source and search for Salesforce.
+Step 3: Enter your Salesforce credentials including the Consumer Key and Consumer Secret. You can find these in your Salesforce Connected App settings.
+Step 4: Select the Salesforce objects you want to sync. You can choose multiple objects such as Accounts, Contacts, Opportunities.
+Step 5: Configure the sync frequency. Options are every 15 minutes, hourly, or daily.
+Step 6: Click Save and Activate. The pipeline will begin its first sync immediately. You can monitor progress in the Activity tab.`;
+
+const SCENE_TYPES=[
+  {type:'context',label:'Scene 1: Context',purpose:'Set the stage — what are we doing and why?',color:'#0d9488',numBg:'rgba(13,148,136,.15)',numColor:'#0d9488',defaultDuration:'0:20–0:30'},
+  {type:'navigation',label:'Scene 2: UI Navigation',purpose:'Show where to go in the product',color:'#7c3aed',numBg:'rgba(124,58,237,.15)',numColor:'#7c3aed',defaultDuration:'0:30–0:45'},
+  {type:'action',label:'Scene 3: Key Action',purpose:'The main thing the user does',color:'#f4720b',numBg:'rgba(244,114,11,.15)',numColor:'#f4720b',defaultDuration:'0:45–1:30'},
+  {type:'result',label:'Scene 4: Result',purpose:'What success looks like',color:'#16a34a',numBg:'rgba(22,163,74,.15)',numColor:'#16a34a',defaultDuration:'0:20–0:30'},
+];
+
+function parseSteps(text){
+  const lines=text.split('\n').map(l=>l.trim()).filter(Boolean);
+  const steps=[];
+  lines.forEach(line=>{
+    const m=line.match(/^(step\s*\d+[:\.]?\s*)/i);
+    steps.push(m?line.slice(m[0].length).trim():line);
+  });
+  return steps;
+}
+
+function assignScenes(steps){
+  const n=steps.length;
+  if(n===0)return[];
+  const scenes=[];
+  const navKW=['navigate','go to','open','click','select','find','search','sidebar','menu','tab','dashboard','page'];
+  const actionKW=['enter','fill','type','configure','set','upload','connect','add','create','input','choose','enable','disable'];
+  const resultKW=['save','activate','submit','complete','done','success','finish','start','launch','deploy','monitor','check'];
+
+  steps.forEach((step,i)=>{
+    const lc=step.toLowerCase();
+    let cat='action';
+    if(navKW.some(k=>lc.includes(k)))cat='navigation';
+    if(actionKW.some(k=>lc.includes(k)))cat='action';
+    if(resultKW.some(k=>lc.includes(k)))cat='result';
+    if(i===0)cat='context';
+    scenes.push({step,cat,idx:i});
+  });
+  return scenes;
+}
+
+function getAlerts(step,cat,audience){
+  const alerts=[];
+  const lc=step.toLowerCase();
+
+  // zoom-in suggestions
+  if(/credential|key|secret|token|password|consumer/i.test(step))alerts.push({type:'zoom',icon:'🔍',label:'lbl-zoom',text:'<strong>Zoom-in recommended:</strong> Credentials fields are small and easy to miss. Zoom to 150% on the form field before the user types.'});
+  if(/select|choose|dropdown|checkbox/i.test(step))alerts.push({type:'zoom',icon:'🔍',label:'lbl-zoom',text:'<strong>Zoom-in recommended:</strong> Multi-select or dropdown interactions are hard to follow at full screen. Zoom in and slow down.'});
+
+  // confusing steps
+  if(/consumer key|consumer secret|oauth/i.test(step))alerts.push({type:'confuse',icon:'⚠️',label:'lbl-confuse',text:'<strong>Potential confusion point:</strong> Users often don\'t know where to find Consumer Key/Secret. Add a callout or cut to a Salesforce setup screen briefly.'});
+  if(/multiple|several|various/i.test(step))alerts.push({type:'confuse',icon:'⚠️',label:'lbl-confuse',text:'<strong>Potential confusion point:</strong> "Multiple" options may overwhelm new users. Consider showing a specific recommended selection rather than all options.'});
+  if(/immediately|automatically/i.test(step))alerts.push({type:'confuse',icon:'⚠️',label:'lbl-confuse',text:'<strong>Note:</strong> If the action triggers an immediate process, show what happens next — don\'t cut away at the moment of activation.'});
+
+  // highlight suggestions
+  if(/click|tap|press/i.test(step))alerts.push({type:'highlight',icon:'🎯',label:'lbl-highlight',text:'<strong>Cursor highlight:</strong> Use a cursor spotlight or animated click indicator so viewers can track exactly where you\'re clicking.'});
+  if(/left sidebar|navigation|menu/i.test(step))alerts.push({type:'highlight',icon:'🎯',label:'lbl-highlight',text:'<strong>Highlight recommended:</strong> Sidebar items are easy to overlook. Use a highlight box or arrow annotation to draw attention to the correct menu item.'});
+
+  // animation suggestions
+  if(/fill|enter|type|input/i.test(step)&&/credential|key|secret|token/i.test(step))alerts.push({type:'animate',icon:'✨',label:'lbl-animate',text:'<strong>This step is visually confusing → recommend animation or cursor highlight.</strong> Slow down typing, use keystroke annotations, and blur sensitive values before recording.'});
+  if(cat==='result')alerts.push({type:'animate',icon:'✨',label:'lbl-animate',text:'<strong>Animate the success state:</strong> Add a subtle zoom-out or fade on the success screen. End with a freeze-frame on the confirmed result so viewers can process it.'});
+
+  // audience-specific
+  if(audience==='developer'&&/ui|dashboard|click/i.test(step))alerts.push({type:'confuse',icon:'💡',label:'lbl-confuse',text:'<strong>Developer audience note:</strong> Consider adding a code snippet or API call equivalent alongside the UI step.'});
+  if(audience==='enduser'&&/api|endpoint|token|oauth/i.test(step))alerts.push({type:'confuse',icon:'💡',label:'lbl-confuse',text:'<strong>Non-technical audience:</strong> This step involves technical concepts. Simplify the voiceover or add a plain-English tooltip explaining what this field is for.'});
+
+  return alerts;
+}
+
+function getOnScreen(step,cat,vidType){
+  const lc=step.toLowerCase();
+  if(cat==='context')return`Product interface overview with the relevant section highlighted. Speaker notes or title card: "${document.getElementById('docTitle').value||'Getting Started'}". Brief context voiceover.`;
+  if(cat==='navigation'){
+    let s=`Show full product UI. `;
+    if(lc.includes('sidebar'))s+=`Pan to the left sidebar. `;
+    if(lc.includes('search'))s+=`Demonstrate the search interaction. `;
+    s+=`Use a cursor highlight to guide the viewer's eye.`;
+    return s;
+  }
+  if(cat==='action'){
+    let s=`Zoom in on the relevant section of the UI. `;
+    if(/enter|type|fill/i.test(step))s+=`Show the user filling in the field — use sample/placeholder data. `;
+    if(/select|choose/i.test(step))s+=`Show the selection interaction clearly, with all options visible momentarily before selecting. `;
+    s+=`Slow down the action to 80% playback speed if needed.`;
+    return s;
+  }
+  return`Show the confirmed success state on screen. Highlight the relevant status indicator, confirmation message, or dashboard update. Pause for 3–5 seconds so viewers can register the result.`;
+}
+
+function getVoiceover(step,cat,audience){
+  if(cat==='context'){
+    const title=document.getElementById('docTitle').value||'this feature';
+    return`"In this video, we'll walk through how to ${title.toLowerCase()}. This takes about [X] minutes and you'll need [prerequisites] before you begin."`;
+  }
+  if(cat==='navigation')return`"First, head to [location in product]. You'll see [visual landmark] — that's where we're going."`;
+  if(cat==='result')return`"Once you hit [final action], you'll see [confirmation]. That's it — you're all set. [Optional: what happens next or where to go from here]."`;
+  // action
+  const simplified=step.replace(/step\s*\d+[:\.]?\s*/i,'');
+  return`"${simplified.charAt(0).toUpperCase()+simplified.slice(1)}" — [add context for ${audience==='developer'?'the developer':'the user'} about why this matters]`;
+}
+
+function generate(){
+  const content=document.getElementById('docContent').value.trim();
+  if(!content){alert('Add some documentation content first.');return}
+  const title=document.getElementById('docTitle').value||'Untitled Feature';
+  const vidType=document.getElementById('vidType').value;
+  const audience=document.getElementById('audience').value;
+  const vidLen=document.getElementById('vidLen').value;
+
+  const steps=parseSteps(content);
+  const assigned=assignScenes(steps);
+
+  // Group into 4 canonical scenes
+  const grouped={context:[],navigation:[],action:[],result:[]};
+  assigned.forEach(s=>grouped[s.cat].push(s.step));
+
+  // Ensure context always has something
+  if(!grouped.context.length&&steps.length)grouped.context=[`Overview: ${title}`];
+  if(!grouped.result.length&&steps.length){
+    const last=grouped.action.pop();
+    if(last)grouped.result.push(last);
+  }
+
+  const totalScenes=4;
+  const estDuration=vidLen==='short'?'1:30–2:00':vidLen==='medium'?'3:00–4:30':'5:00–8:00';
+
+  // Build output
+  document.getElementById('sbTitle').textContent=`${title} — Video Storyboard`;
+  document.getElementById('sbMeta').textContent=`${['Tutorial','Product Overview','Onboarding','API Guide','Troubleshooting'][['tutorial','overview','onboarding','api','troubleshoot'].indexOf(vidType)]} · ${['End User','Admin','Developer','Mixed'][['enduser','admin','developer','mixed'].indexOf(audience)]} · Est. ${estDuration}`;
+  document.getElementById('sbStats').innerHTML=`
+    <div class="sb-stat"><div class="sb-stat-val">4</div><div class="sb-stat-lbl">Scenes</div></div>
+    <div class="sb-stat"><div class="sb-stat-val">${steps.length}</div><div class="sb-stat-lbl">Steps</div></div>
+    <div class="sb-stat"><div class="sb-stat-val">${estDuration}</div><div class="sb-stat-lbl">Est. Length</div></div>
+  `;
+
+  let scenesHtml='';
+  SCENE_TYPES.forEach(sceneType=>{
+    const catSteps=grouped[sceneType.type];
+    const alerts=catSteps.flatMap(s=>getAlerts(s,sceneType.type,audience));
+    const uniqueAlerts=alerts.filter((a,i,arr)=>arr.findIndex(b=>b.text===a.text)===i).slice(0,4);
+    const onScreen=getOnScreen(catSteps[0]||'',sceneType.type,vidType);
+    const voiceover=getVoiceover(catSteps[0]||'',sceneType.type,audience);
+
+    scenesHtml+=`
+    <div class="scene-card">
+      <div class="scene-header">
+        <div class="scene-num" style="background:${sceneType.numBg};color:${sceneType.numColor}">${SCENE_TYPES.indexOf(sceneType)+1}</div>
+        <div>
+          <div class="scene-type-label" style="color:${sceneType.color}">${sceneType.label}</div>
+          <div class="scene-purpose">${sceneType.purpose}</div>
+        </div>
+        <div class="scene-duration">${sceneType.defaultDuration}</div>
+      </div>
+      <div class="scene-body">
+        <div>
+          <div class="scene-col-title">📺 What's on screen</div>
+          <div class="scene-content">${onScreen}</div>
+          ${catSteps.length?`<div style="margin-top:.8rem"><div class="scene-col-title" style="margin-bottom:.4rem">📝 Steps covered</div>${catSteps.map(s=>`<div style="font-size:.78rem;color:var(--muted);padding:.2rem 0;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace">→ ${s}</div>`).join('')}</div>`:''}
+        </div>
+        <div>
+          <div class="scene-col-title">🎙 Voiceover / Script cue</div>
+          <div class="scene-content" style="font-style:italic">${voiceover}</div>
+        </div>
+      </div>
+      ${uniqueAlerts.length?`<div class="scene-notes">${uniqueAlerts.map(a=>`<div class="alert-row"><span class="alert-icon">${a.icon}</span><span class="alert-text"><span class="alert-label ${a.label}">${a.type==='zoom'?'zoom-in':a.type==='confuse'?'user confusion':a.type==='highlight'?'highlight':'animation'}</span>${a.text}</span></div>`).join('')}</div>`:''}
+    </div>`;
+  });
+
+  document.getElementById('scenesContainer').innerHTML=scenesHtml;
+  document.getElementById('storyboard').style.display='block';
+  document.getElementById('storyboard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function loadSample(){
+  document.getElementById('docTitle').value='Setting Up a Salesforce Pipeline';
+  document.getElementById('vidType').value='tutorial';
+  document.getElementById('audience').value='admin';
+  document.getElementById('vidLen').value='medium';
+  document.getElementById('docContent').value=SAMPLE_DOC;
+}
+
+function clearAll(){
+  document.getElementById('docContent').value='';
+  document.getElementById('docTitle').value='';
+  document.getElementById('storyboard').style.display='none';
+}
+
+function exportMd(){
+  const title=document.getElementById('sbTitle').textContent;
+  let md=`# ${title}\n\n${document.getElementById('sbMeta').textContent}\n\n---\n\n`;
+  document.querySelectorAll('.scene-card').forEach(card=>{
+    const label=card.querySelector('.scene-type-label').textContent;
+    const purpose=card.querySelector('.scene-purpose').textContent;
+    const onScreen=card.querySelectorAll('.scene-content')[0]?.textContent||'';
+    const voiceover=card.querySelectorAll('.scene-content')[1]?.textContent||'';
+    const alerts=[...card.querySelectorAll('.alert-text')].map(a=>a.textContent).join('\n- ');
+    md+=`## ${label}\n_${purpose}_\n\n**On screen:** ${onScreen}\n\n**Voiceover cue:** ${voiceover}\n\n`;
+    if(alerts)md+=`**Notes:**\n- ${alerts}\n\n`;
+    md+=`---\n\n`;
+  });
+  const blob=new Blob([md],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='storyboard.md';
+  a.click();
+  const t=document.getElementById('toast');
+  t.style.display='block';
+  setTimeout(()=>t.style.display='none',2000);
+}
+</script>
+</body>
+</html>
