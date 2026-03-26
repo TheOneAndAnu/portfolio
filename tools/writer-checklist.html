@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tech Writer Checklist — Anubhuti Khare</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf7f2; --ink: #1a1208; --surface: #fff;
+    --saffron: #f4720b; --rose: #e8456a; --teal: #0d9488;
+    --green: #16a34a; --yellow: #d97706; --purple: #7c3aed;
+    --muted: #8a7a6a; --border: rgba(0,0,0,0.08); --cream: #fef3e2;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Bricolage Grotesque', sans-serif; }
+
+  header {
+    background: var(--ink); color: white; padding: 1rem 2rem;
+    display: flex; align-items: center; gap: 1.5rem;
+    border-bottom: 3px solid var(--green);
+  }
+  .back { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.8rem; }
+  .back:hover { color: var(--saffron); }
+  .tool-logo { font-size: 1.1rem; font-weight: 800; }
+  .tool-logo span { color: #3fb950; }
+  .tool-sub { font-size: 0.75rem; color: rgba(255,255,255,0.45); font-family: 'DM Mono', monospace; margin-left: auto; }
+
+  .main { max-width: 780px; margin: 0 auto; padding: 2.5rem 2rem 5rem; }
+
+  .progress-bar-wrap { background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: 1.2rem 1.5rem; margin-bottom: 2rem; }
+  .progress-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+  .progress-label { font-size: 0.85rem; font-weight: 700; }
+  .progress-count { font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--muted); }
+  .progress-track { height: 8px; background: var(--bg); border-radius: 100px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--saffron), var(--green)); border-radius: 100px; transition: width 0.4s ease; }
+
+  .section { margin-bottom: 2rem; }
+  .section-header {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.75rem 1rem; border-radius: 8px 8px 0 0;
+    font-size: 0.78rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+    font-family: 'DM Mono', monospace; cursor: pointer; user-select: none;
+    border-left: 3px solid;
+  }
+  .section-header.accuracy { background: rgba(244,114,11,0.08); border-color: var(--saffron); color: var(--saffron); }
+  .section-header.readability { background: rgba(13,148,136,0.08); border-color: var(--teal); color: var(--teal); }
+  .section-header.structure { background: rgba(124,58,237,0.08); border-color: var(--purple); color: var(--purple); }
+  .section-header.style { background: rgba(22,163,74,0.08); border-color: var(--green); color: var(--green); }
+  .section-header.accessibility { background: rgba(232,69,106,0.08); border-color: var(--rose); color: var(--rose); }
+
+  .section-count { margin-left: auto; font-size: 0.65rem; }
+
+  .items { border: 1px solid var(--border); border-radius: 0 0 8px 8px; overflow: hidden; border-top: none; }
+
+  .check-item {
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--border); background: var(--surface);
+    transition: background 0.15s; cursor: pointer;
+  }
+  .check-item:last-child { border-bottom: none; }
+  .check-item:hover { background: var(--cream); }
+  .check-item.checked { background: rgba(22,163,74,0.04); }
+  .check-item.checked .item-text { color: var(--muted); text-decoration: line-through; text-decoration-color: rgba(22,163,74,0.4); }
+
+  .checkbox {
+    width: 20px; height: 20px; border-radius: 5px;
+    border: 2px solid var(--border); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; margin-top: 1px;
+  }
+  .check-item.checked .checkbox { background: var(--green); border-color: var(--green); }
+  .checkbox::after { content: ''; display: none; width: 5px; height: 9px; border: 2px solid white; border-top: none; border-left: none; transform: rotate(45deg) translate(-1px, -1px); }
+  .check-item.checked .checkbox::after { display: block; }
+
+  .item-content { flex: 1; }
+  .item-text { font-size: 0.9rem; font-weight: 600; line-height: 1.5; margin-bottom: 0.2rem; }
+  .item-detail { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+  .priority-badge {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; font-weight: 700;
+    padding: 0.1rem 0.5rem; border-radius: 100px; flex-shrink: 0; margin-top: 3px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .p-high { background: rgba(232,69,106,0.12); color: var(--rose); }
+  .p-medium { background: rgba(217,119,6,0.12); color: var(--yellow); }
+  .p-low { background: rgba(22,163,74,0.12); color: var(--green); }
+
+  .actions { display: flex; gap: 0.75rem; margin-top: 2rem; flex-wrap: wrap; }
+  .action-btn {
+    padding: 0.65rem 1.2rem; border-radius: 6px; cursor: pointer;
+    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 0.85rem;
+    transition: all 0.15s; border: 1.5px solid transparent;
+  }
+  .btn-primary { background: var(--saffron); color: white; }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-outline { background: transparent; border-color: var(--border); color: var(--muted); }
+  .btn-outline:hover { border-color: var(--ink); color: var(--ink); }
+
+  .done-banner {
+    display: none; background: linear-gradient(135deg, var(--green), var(--teal));
+    color: white; border-radius: 10px; padding: 1.5rem 2rem;
+    text-align: center; margin-top: 2rem;
+  }
+  .done-banner.show { display: block; animation: pop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .done-banner h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.3rem; }
+  .done-banner p { font-size: 0.88rem; opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="../index.html" class="back">← Portfolio</a>
+  <div class="tool-logo">Writer<span>.</span>Checklist</div>
+  <div class="tool-sub">Pre-publish quality checklist</div>
+</header>
+
+<div class="main">
+  <div class="progress-bar-wrap">
+    <div class="progress-row">
+      <span class="progress-label">Pre-publish Checklist</span>
+      <span class="progress-count" id="progressCount">0 / 0 complete</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div id="checklistContainer"></div>
+
+  <div class="actions">
+    <button class="action-btn btn-primary" onclick="resetAll()">↺ Reset Checklist</button>
+    <button class="action-btn btn-outline" onclick="exportReport()">Export Report</button>
+  </div>
+
+  <div class="done-banner" id="doneBanner">
+    <h3>🎉 You're ready to publish!</h3>
+    <p>All checklist items complete. Your documentation meets quality standards.</p>
+  </div>
+</div>
+
+<script>
+const checklist = [
+  {
+    id: 'accuracy', label: 'Accuracy & Completeness', color: 'accuracy',
+    items: [
+      { id: 'a1', text: 'All technical claims are verified with the product or engineering team', detail: 'Do not publish until edge cases and version-specific behaviors are confirmed.', priority: 'high' },
+      { id: 'a2', text: 'Screenshots and UI references match the current product version', detail: 'Stale screenshots erode reader trust faster than anything else.', priority: 'high' },
+      { id: 'a3', text: 'All code samples are tested and return expected output', detail: 'Copy-paste code that doesn't work is worse than no code at all.', priority: 'high' },
+      { id: 'a4', text: 'API parameters, endpoints, and response schemas are up to date', detail: 'Confirm against the latest spec or directly with the backend team.', priority: 'high' },
+      { id: 'a5', text: 'Known limitations and edge cases are documented', detail: 'Users who hit these will thank you. Omitting them generates support tickets.', priority: 'medium' },
+    ]
+  },
+  {
+    id: 'readability', label: 'Readability', color: 'readability',
+    items: [
+      { id: 'r1', text: 'Active voice is used throughout', detail: 'Passive voice adds words and obscures who is doing what.', priority: 'medium' },
+      { id: 'r2', text: 'Sentences are under 25 words on average', detail: 'Long sentences force re-reads. Break complex ideas into shorter units.', priority: 'medium' },
+      { id: 'r3', text: 'No jargon or buzzwords without definition', detail: 'Every undefined acronym is a reader you've lost.', priority: 'high' },
+      { id: 'r4', text: 'Second person ("you") is used to address the reader', detail: 'Direct address is more engaging and clearer than third-person passive docs.', priority: 'low' },
+      { id: 'r5', text: 'The document passes a quick read-aloud test', detail: 'If it sounds unnatural spoken aloud, it reads unnaturally too.', priority: 'low' },
+    ]
+  },
+  {
+    id: 'structure', label: 'Structure & Navigation', color: 'structure',
+    items: [
+      { id: 's1', text: 'Headings accurately describe the content beneath them', detail: 'Users scan headings to find what they need. Make every one count.', priority: 'high' },
+      { id: 's2', text: 'H1 → H2 → H3 hierarchy is respected (no heading skips)', detail: 'Broken heading hierarchy breaks screen readers and document structure.', priority: 'medium' },
+      { id: 's3', text: 'Key information is not buried — lead with the most important thing', detail: 'Apply the inverted pyramid. Don't make users read four paragraphs to find the answer.', priority: 'high' },
+      { id: 's4', text: 'All internal links and cross-references resolve correctly', detail: 'Broken links are broken trust. Test every one before publishing.', priority: 'high' },
+      { id: 's5', text: 'Prerequisites or required context are stated up front', detail: 'Never assume the reader has the context you have.', priority: 'medium' },
+    ]
+  },
+  {
+    id: 'style', label: 'Style & Consistency', color: 'style',
+    items: [
+      { id: 'st1', text: 'Terminology is consistent throughout (no synonym switching)', detail: '"Click" vs "Select" vs "Press" — pick one per action and stick to it.', priority: 'high' },
+      { id: 'st2', text: 'Product names and feature names match current branding', detail: 'Check with product or the style guide. Names change more often than you think.', priority: 'medium' },
+      { id: 'st3', text: 'Formatting (bold, code, italics) is used purposefully and consistently', detail: 'Don\'t bold things for emphasis randomly. Bold means "UI element" or "key term."', priority: 'low' },
+      { id: 'st4', text: 'Number formatting is consistent (e.g., "3" vs "three")', detail: 'Use numerals for anything above 10, and for any technical values.', priority: 'low' },
+      { id: 'st5', text: 'Date and time formats follow a consistent pattern', detail: 'Use ISO 8601 (YYYY-MM-DD) for technical content or spell it out for prose.', priority: 'low' },
+    ]
+  },
+  {
+    id: 'accessibility', label: 'Accessibility & Findability', color: 'accessibility',
+    items: [
+      { id: 'ac1', text: 'Images have descriptive alt text', detail: 'Every image that conveys meaning must have alt text. Decorative images use empty alt=""', priority: 'high' },
+      { id: 'ac2', text: 'Page/article has a descriptive, keyword-rich title', detail: 'The title is the most important piece of SEO and navigation copy in the document.', priority: 'high' },
+      { id: 'ac3', text: 'Color is not the only way information is conveyed', detail: 'Colorblind readers should not miss meaning. Use shapes, labels, or patterns too.', priority: 'medium' },
+      { id: 'ac4', text: 'Metadata / description is filled in for the page', detail: 'Helps search engines and site search surface your content correctly.', priority: 'low' },
+    ]
+  }
+];
+
+let state = {};
+checklist.forEach(section => section.items.forEach(item => state[item.id] = false));
+
+function render() {
+  const container = document.getElementById('checklistContainer');
+  container.innerHTML = '';
+  checklist.forEach(section => {
+    const checked = section.items.filter(i => state[i.id]).length;
+    const total = section.items.length;
+    const div = document.createElement('div');
+    div.className = 'section';
+    div.innerHTML = `
+      <div class="section-header ${section.color}">
+        <span>${section.label}</span>
+        <span class="section-count">${checked}/${total}</span>
+      </div>
+      <div class="items">
+        ${section.items.map(item => `
+          <div class="check-item ${state[item.id] ? 'checked' : ''}" onclick="toggle('${item.id}')">
+            <div class="checkbox"></div>
+            <div class="item-content">
+              <div class="item-text">${item.text}</div>
+              <div class="item-detail">${item.detail}</div>
+            </div>
+            <span class="priority-badge p-${item.priority}">${item.priority}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+  updateProgress();
+}
+
+function toggle(id) {
+  state[id] = !state[id];
+  render();
+}
+
+function updateProgress() {
+  const total = Object.keys(state).length;
+  const done = Object.values(state).filter(Boolean).length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('progressCount').textContent = `${done} / ${total} complete`;
+  document.getElementById('progressFill').style.width = pct + '%';
+  const banner = document.getElementById('doneBanner');
+  if (done === total) { banner.classList.add('show'); }
+  else { banner.classList.remove('show'); }
+}
+
+function resetAll() {
+  Object.keys(state).forEach(k => state[k] = false);
+  render();
+}
+
+function exportReport() {
+  const total = Object.keys(state).length;
+  const done = Object.values(state).filter(Boolean).length;
+  let report = `# Tech Writer Pre-Publish Checklist Report\n\nDate: ${new Date().toLocaleDateString()}\nCompletion: ${done}/${total} (${Math.round(done/total*100)}%)\n\n`;
+  checklist.forEach(section => {
+    report += `## ${section.label}\n\n`;
+    section.items.forEach(item => {
+      report += `- [${state[item.id] ? 'x' : ' '}] ${item.text}\n`;
+    });
+    report += '\n';
+  });
+  const blob = new Blob([report], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'writer-checklist-report.md';
+  a.click();
+}
+
+render();
+</script>
+</body>
+</html>
