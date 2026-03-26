@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anubhuti Khare — Technical Writer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@300;400;500&family=Bricolage+Grotesque:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --paper: #faf7f2;
+    --saffron: #f4720b;
+    --marigold: #f9c01e;
+    --rose: #e8456a;
+    --teal: #0d9488;
+    --lavender: #8b5cf6;
+    --cream: #fef3e2;
+    --muted: #8a7a6a;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--saffron);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    transition: transform 0.15s ease, background 0.2s;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 2px solid var(--saffron);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transition: transform 0.35s ease, opacity 0.2s;
+    transform: translate(-50%, -50%);
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.2rem 3rem;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(250,247,242,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(244,114,11,0.12);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem; font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+  .nav-logo span { color: var(--saffron); }
+  nav ul { list-style: none; display: flex; gap: 2.5rem; }
+  nav a {
+    text-decoration: none; color: var(--ink);
+    font-size: 0.82rem; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    position: relative; padding-bottom: 2px;
+  }
+  nav a::after {
+    content: ''; position: absolute; bottom: 0; left: 0;
+    width: 0; height: 2px; background: var(--saffron);
+    transition: width 0.25s ease;
+  }
+  nav a:hover::after { width: 100%; }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    padding: 8rem 3rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 30%, rgba(249,192,30,0.15) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 10% 80%, rgba(244,114,11,0.1) 0%, transparent 70%),
+      radial-gradient(ellipse 30% 30% at 90% 85%, rgba(232,69,106,0.08) 0%, transparent 60%);
+    z-index: 0;
+  }
+
+  .hero-content { position: relative; z-index: 1; }
+
+  .hero-tag {
+    display: inline-block;
+    background: var(--saffron);
+    color: white;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 0.3rem 0.8rem; border-radius: 2px;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 6vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+  }
+  .hero-name .accent { color: var(--saffron); font-style: italic; }
+
+  .hero-role {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.95rem; color: var(--muted);
+    margin-bottom: 2rem;
+    min-height: 1.4em;
+  }
+  .typewriter-cursor {
+    display: inline-block; width: 2px; height: 1em;
+    background: var(--saffron); margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 0.8s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .hero-summary {
+    font-size: 1.05rem; line-height: 1.75;
+    color: #3d3226; max-width: 500px;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-cta {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    text-decoration: none; border-radius: 4px;
+    transition: all 0.2s;
+    cursor: none;
+    border: 2px solid transparent;
+  }
+  .btn-primary {
+    background: var(--ink); color: var(--paper);
+  }
+  .btn-primary:hover { background: var(--saffron); }
+  .btn-outline {
+    background: transparent; color: var(--ink);
+    border-color: var(--ink);
+  }
+  .btn-outline:hover { background: var(--ink); color: var(--paper); }
+
+  /* floating badges */
+  .hero-right {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .badge-cluster {
+    position: relative; width: 400px; height: 400px;
+  }
+  .badge {
+    position: absolute;
+    background: white;
+    border: 1.5px solid rgba(0,0,0,0.06);
+    border-radius: 12px;
+    padding: 1rem 1.4rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    font-size: 0.82rem;
+    animation: float 6s ease-in-out infinite;
+  }
+  .badge .badge-label { font-weight: 700; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+  .badge .badge-val { font-size: 1.3rem; font-weight: 800; font-family: 'Playfair Display', serif; }
+  .badge:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+  .badge:nth-child(2) { top: 5%; right: 5%; animation-delay: -2s; }
+  .badge:nth-child(3) { bottom: 20%; left: 0%; animation-delay: -4s; }
+  .badge:nth-child(4) { bottom: 5%; right: 10%; animation-delay: -1s; }
+  .badge:nth-child(5) { top: 40%; left: 25%; animation-delay: -3s; background: var(--saffron); color: white; }
+  .badge:nth-child(5) .badge-label { color: rgba(255,255,255,0.7); }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(1deg); }
+    66% { transform: translateY(5px) rotate(-1deg); }
+  }
+
+  /* SECTION BASE */
+  section { padding: 6rem 3rem; }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--saffron); margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .section-label::after {
+    content: ''; flex: 1; max-width: 3rem;
+    height: 1px; background: var(--saffron);
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 900; letter-spacing: -0.02em;
+    line-height: 1.1; margin-bottom: 1rem;
+  }
+
+  /* ABOUT */
+  #about { background: var(--ink); color: var(--paper); }
+  #about .section-label { color: var(--marigold); }
+  #about .section-label::after { background: var(--marigold); }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 4rem; align-items: start; margin-top: 3rem;
+  }
+  .about-text p { font-size: 1.05rem; line-height: 1.8; margin-bottom: 1.2rem; color: #d4c9b8; }
+  .about-text p strong { color: var(--marigold); font-weight: 700; }
+  .fun-facts { display: flex; flex-direction: column; gap: 1rem; }
+  .fact-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px; padding: 1.2rem 1.5rem;
+    font-size: 0.92rem; line-height: 1.6; color: #c8bdb0;
+    border-left: 3px solid var(--saffron);
+    transition: background 0.2s;
+  }
+  .fact-card:hover { background: rgba(244,114,11,0.08); }
+  .fact-card::before { content: attr(data-emoji); margin-right: 0.7rem; font-size: 1.1rem; }
+
+  /* SKILLS */
+  #skills { background: var(--cream); }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .skill-card {
+    background: white; border-radius: 12px;
+    padding: 1.5rem; border: 1.5px solid rgba(0,0,0,0.06);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .skill-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(244,114,11,0.15);
+    border-color: var(--saffron);
+  }
+  .skill-category {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem;
+    font-family: 'DM Mono', monospace;
+  }
+  .skill-name { font-weight: 800; font-size: 1rem; margin-bottom: 0.75rem; }
+  .skill-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .pill {
+    font-size: 0.7rem; font-weight: 600;
+    padding: 0.25rem 0.6rem; border-radius: 100px;
+    background: var(--cream); color: var(--ink);
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .pill.hot { background: var(--saffron); color: white; border-color: transparent; }
+  .pill.warm { background: var(--rose); color: white; border-color: transparent; }
+
+  /* EXPERIENCE */
+  #experience { position: relative; }
+  .timeline { margin-top: 3rem; position: relative; }
+  .timeline::before {
+    content: ''; position: absolute;
+    left: 200px; top: 0; bottom: 0;
+    width: 2px; background: linear-gradient(to bottom, var(--saffron), var(--rose), var(--lavender));
+  }
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 3rem; margin-bottom: 3.5rem; position: relative;
+  }
+  .timeline-date {
+    text-align: right; padding-right: 2rem; padding-top: 0.25rem;
+    font-family: 'DM Mono', monospace; font-size: 0.78rem;
+    color: var(--muted); line-height: 1.5;
+  }
+  .timeline-dot {
+    position: absolute; left: 192px;
+    width: 18px; height: 18px;
+    background: var(--saffron); border-radius: 50%;
+    border: 3px solid var(--paper);
+    box-shadow: 0 0 0 3px var(--saffron);
+    top: 6px;
+  }
+  .timeline-content { padding-bottom: 1rem; }
+  .job-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.2rem; }
+  .job-company {
+    font-family: 'DM Mono', monospace; font-size: 0.8rem;
+    color: var(--saffron); font-weight: 500; margin-bottom: 0.5rem;
+  }
+  .job-desc { font-size: 0.83rem; color: var(--muted); font-style: italic; margin-bottom: 1rem; }
+  .job-bullets { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+  .job-bullets li {
+    font-size: 0.9rem; line-height: 1.65; padding-left: 1.2rem;
+    position: relative; color: #3d3226;
+  }
+  .job-bullets li::before {
+    content: '→'; position: absolute; left: 0;
+    color: var(--saffron); font-weight: 700;
+  }
+  .award-chip {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: linear-gradient(135deg, var(--marigold), var(--saffron));
+    color: white; font-size: 0.7rem; font-weight: 700;
+    padding: 0.3rem 0.8rem; border-radius: 100px;
+    margin-top: 0.75rem; margin-right: 0.5rem;
+  }
+
+  /* TOOLS */
+  #tools { background: var(--ink); color: var(--paper); }
+  #tools .section-label { color: var(--teal); }
+  #tools .section-label::after { background: var(--teal); }
+  .tools-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .tool-card {
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 14px; padding: 2rem;
+    transition: all 0.25s; text-decoration: none; color: inherit;
+    display: block; cursor: none;
+  }
+  .tool-card:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: var(--teal);
+    transform: translateY(-4px);
+  }
+  .tool-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .tool-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .tool-desc { font-size: 0.85rem; color: #a09080; line-height: 1.65; margin-bottom: 1.2rem; }
+  .tool-link {
+    font-family: 'DM Mono', monospace; font-size: 0.75rem;
+    color: var(--teal); font-weight: 500;
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+
+  /* WRITING */
+  #writing { background: var(--cream); }
+  .writing-tabs {
+    display: flex; gap: 0.75rem; margin-bottom: 2.5rem; flex-wrap: wrap;
+  }
+  .tab-btn {
+    padding: 0.5rem 1.2rem; border-radius: 100px;
+    border: 2px solid rgba(0,0,0,0.12);
+    background: transparent; font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 0.82rem; font-weight: 700; cursor: none;
+    transition: all 0.2s; color: var(--ink);
+  }
+  .tab-btn.active {
+    background: var(--saffron); color: white; border-color: var(--saffron);
+  }
+  .writing-panel { display: none; }
+  .writing-panel.active { display: block; }
+
+  .prose-card {
+    background: white; border-radius: 14px; padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06); max-width: 720px;
+    border-left: 4px solid var(--saffron);
+    position: relative; overflow: hidden;
+  }
+  .prose-card::before {
+    content: '"'; position: absolute; top: -1rem; left: 1.5rem;
+    font-family: 'Playfair Display', serif; font-size: 8rem;
+    color: rgba(244,114,11,0.06); line-height: 1;
+  }
+  .prose-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .prose-meta { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-bottom: 1.5rem; }
+  .prose-body { font-size: 0.95rem; line-height: 1.85; color: #3d3226; white-space: pre-wrap; }
+
+  .poems-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .poem-card {
+    background: white; border-radius: 14px; padding: 2rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    border-top: 3px solid var(--rose);
+    transition: transform 0.2s;
+    cursor: none;
+  }
+  .poem-card:hover { transform: translateY(-3px); }
+  .poem-card.hindi { border-top-color: var(--lavender); }
+  .poem-card.english { border-top-color: var(--rose); }
+  .poem-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .poem-lang { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.1em; }
+  .poem-excerpt { font-size: 0.87rem; line-height: 1.8; color: #5a4e42; }
+  .poem-expand-btn {
+    margin-top: 1rem; font-size: 0.75rem; font-weight: 700;
+    color: var(--rose); background: none; border: none; cursor: none;
+    display: flex; align-items: center; gap: 0.3rem; padding: 0;
+    font-family: 'Bricolage Grotesque', sans-serif;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(26,18,8,0.85); z-index: 1000;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(8px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--paper); border-radius: 18px;
+    padding: 3rem; max-width: 600px; width: 90%;
+    max-height: 80vh; overflow-y: auto;
+    position: relative;
+  }
+  .modal-close {
+    position: absolute; top: 1.5rem; right: 1.5rem;
+    background: var(--ink); color: var(--paper);
+    border: none; border-radius: 50%; width: 32px; height: 32px;
+    font-size: 1rem; cursor: none; display: flex; align-items: center; justify-content: center;
+  }
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .modal-lang { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; text-transform: uppercase; letter-spacing: 0.1em; }
+  .modal-poem { font-size: 0.95rem; line-height: 2; white-space: pre-wrap; color: #3d3226; }
+
+  /* CATS */
+  #cats { background: white; }
+  .cats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
+  .cat-card {
+    border-radius: 16px; overflow: hidden;
+    border: 2px solid rgba(0,0,0,0.06);
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .cat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
+  .cat-header {
+    padding: 2rem; display: flex; align-items: center; gap: 1.5rem;
+    position: relative; overflow: hidden;
+  }
+  .cat-card:nth-child(1) .cat-header { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
+  .cat-card:nth-child(2) .cat-header { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+  .cat-emoji { font-size: 4rem; }
+  .cat-name { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; }
+  .cat-alias { font-size: 0.82rem; color: rgba(26,18,8,0.6); font-style: italic; margin-top: 0.2rem; }
+  .cat-body { padding: 1.5rem 2rem; }
+  .cat-traits { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+  .cat-trait {
+    font-size: 0.73rem; font-weight: 700; padding: 0.3rem 0.75rem;
+    border-radius: 100px; background: var(--cream); border: 1px solid rgba(0,0,0,0.08);
+  }
+  .cat-bio { font-size: 0.9rem; line-height: 1.7; color: #5a4e42; }
+  .duo-card {
+    grid-column: 1 / -1;
+    background: var(--ink); color: var(--paper);
+    border-radius: 16px; padding: 2rem 2.5rem;
+    display: flex; align-items: center; gap: 2rem;
+  }
+  .duo-emoji { font-size: 3rem; }
+  .duo-text h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .duo-text p { font-size: 0.9rem; color: #c8bdb0; line-height: 1.7; }
+
+  /* CONTACT */
+  #contact { background: linear-gradient(135deg, var(--saffron), var(--rose)); color: white; text-align: center; }
+  #contact .section-label { color: rgba(255,255,255,0.7); }
+  #contact .section-label::after { background: rgba(255,255,255,0.4); }
+  #contact .section-title { color: white; }
+  .contact-sub { font-size: 1.1rem; color: rgba(255,255,255,0.85); margin-bottom: 2.5rem; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+  .contact-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .contact-link {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(255,255,255,0.2); color: white;
+    border: 1.5px solid rgba(255,255,255,0.35);
+    padding: 0.75rem 1.75rem; border-radius: 100px;
+    font-size: 0.85rem; font-weight: 700;
+    text-decoration: none; transition: all 0.2s; cursor: none;
+    backdrop-filter: blur(8px);
+  }
+  .contact-link:hover { background: white; color: var(--saffron); }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink); color: #8a7a6a;
+    text-align: center; padding: 2rem;
+    font-family: 'DM Mono', monospace; font-size: 0.75rem;
+  }
+  footer span { color: var(--saffron); }
+
+  /* SCROLL ANIMATIONS */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* EASTER EGG KONAMI */
+  .konami-overlay {
+    display: none; position: fixed; inset: 0;
+    background: var(--ink); z-index: 9000;
+    align-items: center; justify-content: center;
+    flex-direction: column; text-align: center;
+  }
+  .konami-overlay.show { display: flex; animation: fadeIn 0.5s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .konami-msg {
+    font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--marigold);
+    line-height: 1.6; max-width: 600px; padding: 2rem;
+  }
+  .konami-close {
+    margin-top: 2rem; background: var(--saffron); color: white;
+    border: none; padding: 0.75rem 2rem; border-radius: 8px;
+    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 1rem;
+    cursor: pointer;
+  }
+
+  @media (max-width: 768px) {
+    #hero { grid-template-columns: 1fr; padding: 6rem 1.5rem 3rem; }
+    .hero-right { display: none; }
+    .about-grid, .poems-grid, .cats-grid { grid-template-columns: 1fr; }
+    .timeline::before { left: 0; }
+    .timeline-item { grid-template-columns: 1fr; }
+    .timeline-date { text-align: left; padding-left: 1.5rem; padding-right: 0; }
+    .timeline-dot { left: -9px; }
+    nav ul { display: none; }
+    section { padding: 4rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- KONAMI EASTER EGG -->
+<div class="konami-overlay" id="konamiOverlay">
+  <div class="konami-msg">
+    🎉 You found the secret!<br><br>
+    <em>"If something is confusing, I take it personally."</em><br><br>
+    Welcome to the part of the portfolio where Rosa is judging you.<br>
+    She says your docs probably need more context.<br>
+    (She's not wrong.)
+  </div>
+  <button class="konami-close" onclick="document.getElementById('konamiOverlay').classList.remove('show')">Close & pretend this never happened</button>
+</div>
+
+<!-- POEM MODAL -->
+<div class="modal-overlay" id="poemModal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-lang" id="modalLang"></div>
+    <div class="modal-poem" id="modalPoem"></div>
+  </div>
+</div>
+
+<nav>
+  <div class="nav-logo">Anu<span>.</span></div>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#writing">Writing</a></li>
+    <li><a href="#cats">Cats</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Open to opportunities</div>
+    <h1 class="hero-name">
+      Anubhuti<br><span class="accent">Khare.</span>
+    </h1>
+    <p class="hero-role"><span id="typewriter"></span><span class="typewriter-cursor"></span></p>
+    <p class="hero-summary">
+      I romanticize sunsets, rain, and well-written documentation equally. Technical Writer with 3+ years turning "this makes no sense" into "oh wait, that's clean."
+    </p>
+    <div class="hero-cta">
+      <a href="resume.html" class="btn btn-primary">View Résumé →</a>
+      <a href="#tools" class="btn btn-outline">See My Tools</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="badge-cluster">
+      <div class="badge">
+        <div class="badge-label">Experience</div>
+        <div class="badge-val">3+ Years</div>
+      </div>
+      <div class="badge">
+        <div class="badge-label">Domain</div>
+        <div class="badge-val">SaaS & API Docs</div>
+      </div>
+      <div class="badge">
+        <div class="badge-label">ERDs Migrated</div>
+        <div class="badge-val">89+</div>
+      </div>
+      <div class="badge">
+        <div class="badge-label">Education</div>
+        <div class="badge-val">B.Tech CSE</div>
+      </div>
+      <div class="badge">
+        <div class="badge-label">Currently at</div>
+        <div class="badge-val">Hevodata</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">A little about me</div>
+  <h2 class="section-title">Clarity is a craft.</h2>
+  <div class="about-grid reveal">
+    <div class="about-text">
+      <p>I don't just document products — I <strong>reverse-engineer how people think</strong> while using them. Three years in, I still get personally offended by unclear interfaces.</p>
+      <p>My work lives at the intersection of <strong>technical depth and human clarity</strong>. I'm a B.Tech CSE grad who chose words over compilers, and I've never looked back.</p>
+      <p>Currently at Hevodata, building documentation systems, migrating schemas, and making data pipelines feel less intimidating to 2,000+ teams globally.</p>
+      <p>Off the clock: <strong>gym at 10PM</strong>, candles + Bollywood marathons, raising two chaotic kittens, and building toward financial independence by 40 — yes, there are spreadsheets.</p>
+    </div>
+    <div class="fun-facts">
+      <div class="fact-card" data-emoji="🌅">I romanticize sunsets, rain, and well-written documentation equally.</div>
+      <div class="fact-card" data-emoji="📖">Secretly building a life where I retire early and write books that hurt a little.</div>
+      <div class="fact-card" data-emoji="🎯">I care about clarity more than cleverness — but I enjoy both.</div>
+      <div class="fact-card" data-emoji="🧠">Actively exploring AI-first documentation workflows and faster content systems.</div>
+      <div class="fact-card" data-emoji="💛">Dream life: mountains, a cozy home, and too many cats.</div>
+      <div class="fact-card" data-emoji="🎵">Playlists slightly dramatic. Stories deeply emotional. Work ruthlessly clear.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-label">What I work with</div>
+  <h2 class="section-title">Core Technical Skills</h2>
+  <div class="skills-grid reveal">
+    <div class="skill-card">
+      <div class="skill-category">Documentation Types</div>
+      <div class="skill-name">What I Write</div>
+      <div class="skill-pills">
+        <span class="pill hot">API / Dev Docs</span>
+        <span class="pill warm">UX Writing</span>
+        <span class="pill">Release Notes</span>
+        <span class="pill">Runbooks</span>
+        <span class="pill">Schema / ERD</span>
+        <span class="pill">Tech Specs</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-category">Markup & Languages</div>
+      <div class="skill-name">Languages</div>
+      <div class="skill-pills">
+        <span class="pill hot">Markdown</span>
+        <span class="pill hot">XML</span>
+        <span class="pill warm">HTML</span>
+        <span class="pill warm">CSS</span>
+        <span class="pill">JavaScript</span>
+        <span class="pill">DBML</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-category">Docs-as-Code</div>
+      <div class="skill-name">Dev Workflow</div>
+      <div class="skill-pills">
+        <span class="pill hot">Git / GitHub</span>
+        <span class="pill hot">VS Code</span>
+        <span class="pill">Command Line</span>
+        <span class="pill">PR Reviews</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-category">CMS & Authoring</div>
+      <div class="skill-name">Tools I Use</div>
+      <div class="skill-pills">
+        <span class="pill hot">Document360</span>
+        <span class="pill warm">Confluence</span>
+        <span class="pill">dbdocs.io</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-category">Multimedia & Design</div>
+      <div class="skill-name">Visual Content</div>
+      <div class="skill-pills">
+        <span class="pill hot">Figma</span>
+        <span class="pill warm">Camtasia</span>
+        <span class="pill">Adobe Captivate</span>
+        <span class="pill">Canva</span>
+        <span class="pill">Premiere Pro</span>
+        <span class="pill">Photoshop</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-category">Core Competencies</div>
+      <div class="skill-name">How I Think</div>
+      <div class="skill-pills">
+        <span class="pill hot">Info Architecture</span>
+        <span class="pill warm">Content Strategy</span>
+        <span class="pill">Doc Audits</span>
+        <span class="pill">Style Guides</span>
+        <span class="pill">Cross-functional</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-label">Where I've been</div>
+  <h2 class="section-title">Professional Experience</h2>
+  <div class="timeline reveal">
+    <div class="timeline-item">
+      <div class="timeline-date">Nov 2024<br>— Present</div>
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <div class="job-title">Technical Writer</div>
+        <div class="job-company">Hevodata</div>
+        <div class="job-desc">No-code data pipeline SaaS platform used by 2,000+ data teams globally.</div>
+        <ul class="job-bullets">
+          <li>Develop and maintain product documentation, UX microcopy, and API/developer docs for a fast-moving, highly technical data integration platform.</li>
+          <li>Led migration of 89+ ERDs to dbdocs.io using DBML workflows, standardizing schema documentation across the platform.</li>
+          <li>Spearheaded glossary management, interactive video creation, full content audits, and CS ticket analysis — all within first 90 days.</li>
+          <li>Created interactive product walkthroughs and tutorial videos using ActivePresenter and Adobe Captivate.</li>
+          <li>Maintain all documentation via Git-based docs-as-code workflows with cross-functional review cycles.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">Jun 2022<br>— Oct 2024</div>
+      <div class="timeline-dot" style="background: var(--rose); box-shadow: 0 0 0 3px var(--rose);"></div>
+      <div class="timeline-content">
+        <div class="job-title">ID2 – Information Developer</div>
+        <div class="job-company">Whatfix</div>
+        <div class="job-desc">Leading Digital Adoption Platform (DAP) serving enterprise SaaS customers globally.</div>
+        <ul class="job-bullets">
+          <li>Owned end-to-end documentation lifecycle for product features — from early design review to post-release support content.</li>
+          <li>Authored technical specs, API docs, internal runbooks, and user-facing content using Document360 and Confluence.</li>
+          <li>Created infographics, walkthrough videos, flowcharts, and UI illustrations using Camtasia, Figma, Canva, and Adobe tools.</li>
+          <li>Trained and mentored both junior and senior technical writers, contributing to team quality standards.</li>
+          <li>Participated in product design and usability reviews, contributing structured UX writing feedback.</li>
+        </ul>
+        <div>
+          <span class="award-chip">🏆 OKR Rockstar Q1 2024</span>
+          <span class="award-chip">⚡ Automators of the Quarter 2024</span>
+        </div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-date">2019 – 2023</div>
+      <div class="timeline-dot" style="background: var(--lavender); box-shadow: 0 0 0 3px var(--lavender);"></div>
+      <div class="timeline-content">
+        <div class="job-title">Bachelor of Engineering, Computer Science</div>
+        <div class="job-company">Bennett University</div>
+        <div class="job-desc">CGPA: 8.2 / 10</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section id="tools">
+  <div class="section-label">What I built</div>
+  <h2 class="section-title">Documentation Tools</h2>
+  <p style="color: #a09080; margin-bottom: 1rem; font-size: 0.95rem;">Built to solve real problems I ran into as a technical writer. Each is a deployable web app.</p>
+  <div class="tools-grid reveal">
+    <a href="tools/api-explorer.html" class="tool-card">
+      <div class="tool-icon">⚡</div>
+      <div class="tool-name">API Docs Explorer</div>
+      <div class="tool-desc">An interactive mock API browser. Explore endpoints, fire test requests, and see live responses — no backend needed.</div>
+      <div class="tool-link">Open tool →</div>
+    </a>
+    <a href="tools/style-linter.html" class="tool-card">
+      <div class="tool-icon">✍️</div>
+      <div class="tool-name">Style Guide Linter</div>
+      <div class="tool-desc">Paste your documentation draft and get instant feedback: passive voice, jargon, sentence length, and style rule violations.</div>
+      <div class="tool-link">Open tool →</div>
+    </a>
+    <a href="tools/changelog-gen.html" class="tool-card">
+      <div class="tool-icon">📋</div>
+      <div class="tool-name">Changelog Generator</div>
+      <div class="tool-desc">Turn a bullet list of dev notes into a clean, reader-friendly changelog. Categorizes, formats, and exports in Markdown.</div>
+      <div class="tool-link">Open tool →</div>
+    </a>
+    <a href="tools/writer-checklist.html" class="tool-card">
+      <div class="tool-icon">☑️</div>
+      <div class="tool-name">Tech Writer Checklist</div>
+      <div class="tool-desc">A pre-publish checklist for technical writers. Track readability, accuracy, structure, and style — before you hit publish.</div>
+      <div class="tool-link">Open tool →</div>
+    </a>
+  </div>
+</section>
+
+<!-- WRITING -->
+<section id="writing">
+  <div class="section-label">My creative writing</div>
+  <h2 class="section-title">Words I've Made</h2>
+  <div class="writing-tabs">
+    <button class="tab-btn active" onclick="switchTab('song')">🎵 Song</button>
+    <button class="tab-btn" onclick="switchTab('poems')">✍️ Poems</button>
+  </div>
+
+  <div class="writing-panel active" id="tab-song">
+    <div class="prose-card reveal">
+      <div class="prose-title">A Wanderer's Ballad</div>
+      <div class="prose-meta">Song / Prose poem · English</div>
+      <div class="prose-body">In the quiet moments, when the world hushed to a whisper, I couldn't help but reflect on the words spoken to me long ago. Destiny, they said, was my eternal companion, my guiding star. It was a promise of new lands, exotic tastes, and an insatiable love for adventure that coursed through my veins.
+
+There's something intoxicating about the anonymity of a foreign city, like the empty pages of a journal yearning to be filled with ink. Under a foreign sky, I could rewrite my beginnings and craft new endings, each step a revelation of self.
+
+No plans, no fixed destinations, no expectations; they warned me that I'd never be content with less. But what they didn't tell me was whether I'd be fortunate enough to embark on this adventure with another soul, a kindred spirit seeking the same uncharted territories of the heart.
+
+<em>We'd start in the heart of India, the vibrant and chaotic streets of Delhi...</em>
+
+<em>"Come with me to Greece," I'd whisper, feeling the cool breeze off Santorini's white stairs...</em>
+
+<em>Home, you'd tell me, wasn't a fixed location but a feeling nestled deep within us, within each other.</em>
+
+You, my love, would be the walking journal I'd always needed, reciting how my words danced in your soul, reflected my passion, and understood my pain. A living testament that I had lived and loved, for you were, and forever would be, my grandest adventure.</div>
+    </div>
+  </div>
+
+  <div class="writing-panel" id="tab-poems">
+    <div class="poems-grid reveal">
+
+      <div class="poem-card hindi">
+        <div class="poem-title">जब हम ना होंगे</div>
+        <div class="poem-lang">Hindi · Reflective</div>
+        <div class="poem-excerpt">हम नहीं होंगे उस दिन जब तुम्हारी आंखें ढूंढते हुए थक जाएंगी पुरानी शिकायतों में...</div>
+        <button class="poem-expand-btn" onclick="openPoem('jab-hum')">Read full poem →</button>
+      </div>
+
+      <div class="poem-card english">
+        <div class="poem-title">Almost Forgot</div>
+        <div class="poem-lang">English · Nostalgic</div>
+        <div class="poem-excerpt">Somedays you will love being an adult / to drive your car on open streets / to spend your money on late night treats...</div>
+        <button class="poem-expand-btn" onclick="openPoem('almost-forgot')">Read full poem →</button>
+      </div>
+
+      <div class="poem-card hindi">
+        <div class="poem-title">फालतू के लम्हे</div>
+        <div class="poem-lang">Hindi · Midnight poetry</div>
+        <div class="poem-excerpt">सुभा का क्या है? / वो रोज ही / बिन बुलाए / दस्तक दे ही देती है...</div>
+        <button class="poem-expand-btn" onclick="openPoem('faltu')">Read full poem →</button>
+      </div>
+
+      <div class="poem-card english">
+        <div class="poem-title">Crowd Control</div>
+        <div class="poem-lang">English · Love & longing</div>
+        <div class="poem-excerpt">Walls blur, voices drown in their own echoes, / and the world becomes a painting smudged by time...</div>
+        <button class="poem-expand-btn" onclick="openPoem('crowd-control')">Read full poem →</button>
+      </div>
+
+      <div class="poem-card english" style="border-top-color: var(--teal);">
+        <div class="poem-title">Inked</div>
+        <div class="poem-lang">English · Identity · About writing</div>
+        <div class="poem-excerpt">Literature is all I have ever been. Words, on words, on words — I am left breathless and shaken as poem after poem strikes its way through my heart...</div>
+        <button class="poem-expand-btn" style="color: var(--teal);" onclick="openPoem('inked')">Read full poem →</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CATS -->
+<section id="cats">
+  <div class="section-label">The real bosses</div>
+  <h2 class="section-title">Meet Rosa & Lily</h2>
+  <div class="cats-grid reveal">
+    <div class="cat-card">
+      <div class="cat-header">
+        <div class="cat-emoji">🐱</div>
+        <div>
+          <div class="cat-name">Rosa</div>
+          <div class="cat-alias">The Emotional Main Character</div>
+        </div>
+      </div>
+      <div class="cat-body">
+        <div class="cat-traits">
+          <span class="cat-trait">Clingy</span>
+          <span class="cat-trait">Dramatic</span>
+          <span class="cat-trait">Ankle Attacker</span>
+          <span class="cat-trait">Bird Watcher</span>
+          <span class="cat-trait">Apologizes after chaos</span>
+        </div>
+        <p class="cat-bio">Your shadow, your therapist, your problem. Rosa follows you everywhere, sleeps on you, and expresses the full range of human emotion through meows. She will cause chaos, deeply regret it, and immediately seek forgiveness. Iconic behavior.</p>
+      </div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-header">
+        <div class="cat-emoji">🐈</div>
+        <div>
+          <div class="cat-name">Lily</div>
+          <div class="cat-alias">The Cool But Secretly Unhinged Sidekick</div>
+        </div>
+      </div>
+      <div class="cat-body">
+        <div class="cat-traits">
+          <span class="cat-trait">Curious</span>
+          <span class="cat-trait">Adaptable</span>
+          <span class="cat-trait">Chaos energy</span>
+          <span class="cat-trait">Social butterfly</span>
+          <span class="cat-trait">The cooler sibling</span>
+        </div>
+        <p class="cat-bio">Lily bonded with Rosa first and then casually claimed her place in the family, as smooth operators do. Curious, adaptable, and carrying a subtle chaos energy that she deploys only at the most inconvenient moments.</p>
+      </div>
+    </div>
+    <div class="duo-card">
+      <div class="duo-emoji">🐾🐾</div>
+      <div class="duo-text">
+        <h3>Together, they are a force.</h3>
+        <p>A chaos duo of equal parts cuddles and WWE wrestling matches. Rosa is the emotional lead; Lily is the calm sidekick who is secretly the more dangerous one. Their combined mission: keep you company, knock things off surfaces, and remind you that no documentation deadline is more important than their dinner.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">Say hello</div>
+  <h2 class="section-title">Let's work together.</h2>
+  <p class="contact-sub">Open to roles, collaborations, and conversations about great documentation. I will also accept cat photos.</p>
+  <div class="contact-links">
+    <a href="mailto:khareanu1612@gmail.com" class="contact-link">✉️ khareanu1612@gmail.com</a>
+    <a href="https://linkedin.com/in/anubhuti-khare-83a843195" target="_blank" class="contact-link">💼 LinkedIn</a>
+    <a href="resume.html" class="contact-link">📄 View Résumé</a>
+  </div>
+</section>
+
+<footer>
+  Built with words & stubbornness by <span>Anubhuti Khare</span>. Rosa approved this message.
+</footer>
+
+<script>
+// Cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  setTimeout(() => {
+    ring.style.left = e.clientX + 'px';
+    ring.style.top = e.clientY + 'px';
+  }, 80);
+});
+
+// Typewriter
+const roles = [
+  'Technical Writer · API & Developer Docs',
+  'Docs-as-Code Practitioner',
+  'UX Writer & Content Strategist',
+  'Schema & ERD Documentation Specialist',
+  'Occasionally: Poet, Cat Mom, Chaos Manager',
+];
+let rIdx = 0, cIdx = 0, deleting = false;
+const tw = document.getElementById('typewriter');
+function type() {
+  const current = roles[rIdx];
+  if (!deleting) {
+    tw.textContent = current.slice(0, cIdx + 1);
+    cIdx++;
+    if (cIdx === current.length) { deleting = true; setTimeout(type, 2000); return; }
+  } else {
+    tw.textContent = current.slice(0, cIdx - 1);
+    cIdx--;
+    if (cIdx === 0) { deleting = false; rIdx = (rIdx + 1) % roles.length; }
+  }
+  setTimeout(type, deleting ? 40 : 70);
+}
+type();
+
+// Reveal on scroll
+const revealEls = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.1 });
+revealEls.forEach(el => obs.observe(el));
+
+// Tabs
+function switchTab(id) {
+  document.querySelectorAll('.writing-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Poems data
+const poems = {
+  'jab-hum': {
+    title: 'जब हम ना होंगे',
+    lang: 'Hindi · Reflective',
+    text: `हम नहीं होंगे उस दिन
+जब तुम्हारी आंखें ढूंढते हुए थक जाएंगी
+पुरानी शिकायतों में,
+कुछ छोटी छोटी झुंझुलताओं में,
+तुम्हारी आँखें तलाशेंगी
+शून्य की नीरवता में
+
+फिर तुम थोड़ा से मुस्कराकर
+चाय की चुस्कियों के बीच,
+बोलोगी
+अरे, वो ऐसा ही था
+शांति की तलाश में अशांति को आमंत्रित करता था
+मुस्कराकर, चाय की चुस्कियों में
+उम्र की थकान ढूंढता था
+
+जब उम्र परवान चढ़ रही थी तो ,
+कहीं किसी रोज पुरानी यादों में से
+कुछ बेवकूफियां मुस्कराते हुए चिढ़ा रही थी मुंह
+ये बताते हुए कि
+उम्र की दहलीज पे लोग सीख जाते है
+मुस्कराते हुए दर्द को छिपाना`
+  },
+  'almost-forgot': {
+    title: 'Almost Forgot',
+    lang: 'English · Nostalgic',
+    text: `Somedays you will love being an adult
+to drive your car on open streets
+to spend your money on late night treats
+to live your life as you please
+
+but every so often
+you wish it were all a dream
+and you wish you wake up soon
+and cry to not go to school
+
+I remember the kids we used to be
+when summer days were spent in parks
+blissfully unaware of the melting earth
+when getting up was easy after a fall
+the ground wasn't even that far
+
+I remember the kids we used to be
+who knew love from SRK movies
+
+Somedays you will love being an adult
+but every so often
+you'll think back to old days
+you'll miss the naivety 
+and yearn to return to the days
+when you yearned for maturity`
+  },
+  'faltu': {
+    title: 'फालतू के लम्हे',
+    lang: 'Hindi · Midnight poetry',
+    text: `सुभा का क्या है?
+वो रोज ही
+बिन बुलाए
+दस्तक दे ही देती है।
+जैसे कोई ज़िद्दी मेहमान
+जो मुँह उठाकर चला आता है।
+
+दोपहर...
+ना गर्म है,
+ना ठंडी।
+बस एक लिज़लिज़ी सी परछाईं
+जो टपकती रहती है।
+
+शाम भी
+यूँही
+सूरज को जाता देख
+भागी चली आती है।
+हर रोज़
+एक ही रंग में रंगी।
+
+बस ये आधी रात के
+कुछ लम्हे ही तो हैं,
+चुराए हुए थे।
+इन लम्हों में
+ज़िन्दगी का
+अलग ही मज़ा है।
+क्यूँकि ये मिलते नहीं...
+ये छीने जाते हैं।
+
+मगर
+बेगानी नींद
+जैसे सुभा की दलाल बनके
+कमबख़्त
+आ ही जाती है।`
+  },
+  'crowd-control': {
+    title: 'Crowd Control',
+    lang: 'English · Love & longing',
+    text: `Walls blur, voices drown in their own echoes,
+and the world becomes a painting smudged by time.
+All I ever truly search for
+is not the room,
+but the tremble my heart gives
+when it believes you might be in it.
+
+There is a stillness that wraps around my ribs
+like ivy curling in grief…
+the kind that only blooms
+in the absence of your face.
+
+What is a crowd
+if not a labyrinth of strangers
+between me and the one soul
+I would cross oceans of silence to find?
+
+And what is love
+if not this constant ache,
+this quiet, uninvited prayer
+that your face be the next one I see
+when the door creaks open?
+
+I look for you
+the way the moon looks for the sea…
+not loudly, not proudly,
+but with a pull so ancient,
+it forgets how to want anything else.
+
+Even in joy,
+my happiness limps
+because it is missing the weight of your gaze.
+Even in light,
+my shadow wanders,
+asking the sun if it has seen your outline.`
+  },
+  'inked': {
+    title: 'Inked',
+    lang: 'English · Identity · About writing',
+    text: `Literature is all I have ever been. 
+Words, on words, on words–
+I am left breathless and shaken as poem after poem strikes its way through my heart. 
+
+I am a shrewd, smiling amalgamation of every character I have ever written, read, or played–
+I am all. A stage. A writer. An actor. A reader. A viewer. 
+What am I? I am the audience and the performer. 
+
+Before literature, I was nothing.
+A blank book, ready to be inked over time and time again. 
+I have filled my pages with words, with ink stains, with everything good–
+yet painful, Ugly– yet warm. 
+
+Words define me, they created me. 
+In a twisted way, I am my own tragedy.
+
+I am the rise, the peak, the fall–
+I am both the tragic hero and the tragic villain. 
+
+Words, on words, on words–
+What am I?
+I am the urge to be set free, to be comforted:
+to know that someone has felt this before. 
+
+I know nothing. I know everything. 
+
+These novels, stories, and poems have left me desolate–
+I am wretched. I am destruction in its finest form. 
+
+What am I, if not a song for the bards to sing?
+if not an actor's muse? if not an artist?
+
+Words have left me hurt, and yet I turn to them for healing. 
+
+There is a sort of madness in being an artist.
+You must be mad to create, to write.
+You must be mad, utterly out of your mind, to be a poet. 
+
+Many compare a poet's pen to a soldier's sword–
+I do not quite agree.
+The poet's weapon is his madness.
+It is his madness that forces him to write–
+to pour his own blood and spill the depths of his own soul
+onto pages of his own flesh. 
+
+A poet's work is a wretched little thing.
+Lines, sonnets, and stanzas written in ruby red.
+It is the poet's way of cracking open his own ribs
+and telling the audience:
+Look at me.
+Look at my madness, my vulnerability bared raw–
+and view it as your own. 
+
+I am mad, yet I am entirely sane. 
+
+My mind lacks the sort of clearness many view as sanity–
+but I know I am sane. But I am mad.
+How can that be? 
+
+How can that be?
+A poet's existence is nothing more than irony.`
+  }
+};
+
+function openPoem(id) {
+  const p = poems[id];
+  document.getElementById('modalTitle').textContent = p.title;
+  document.getElementById('modalLang').textContent = p.lang;
+  document.getElementById('modalPoem').textContent = p.text;
+  document.getElementById('poemModal').classList.add('open');
+}
+document.getElementById('modalClose').onclick = () => {
+  document.getElementById('poemModal').classList.remove('open');
+};
+document.getElementById('poemModal').onclick = function(e) {
+  if (e.target === this) this.classList.remove('open');
+};
+
+// Konami code easter egg
+let konamiSeq = [], konamiCode = [38,38,40,40,37,39,37,39,66,65];
+document.addEventListener('keydown', e => {
+  konamiSeq.push(e.keyCode);
+  konamiSeq = konamiSeq.slice(-10);
+  if (konamiSeq.join(',') === konamiCode.join(',')) {
+    document.getElementById('konamiOverlay').classList.add('show');
+  }
+});
+
+// Click easter egg on nav logo
+let logoClicks = 0;
+document.querySelector('.nav-logo').addEventListener('click', () => {
+  logoClicks++;
+  if (logoClicks === 5) {
+    alert('👾 You clicked the logo 5 times. Rosa respects the commitment.\n\n(Try the Konami code for a real secret: ↑↑↓↓←→←→BA)');
+    logoClicks = 0;
+  }
+});
+</script>
+</body>
+</html>

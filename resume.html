@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Résumé — Anubhuti Khare</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@300;400;500&family=Bricolage+Grotesque:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208; --paper: #faf7f2; --saffron: #f4720b;
+    --marigold: #f9c01e; --rose: #e8456a; --teal: #0d9488;
+    --cream: #fef3e2; --muted: #8a7a6a;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: 'Bricolage Grotesque', sans-serif; }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 1.5rem 3rem; color: var(--muted);
+    text-decoration: none; font-size: 0.82rem; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--saffron); }
+
+  .resume-wrapper {
+    max-width: 860px; margin: 0 auto;
+    padding: 2rem 3rem 5rem;
+  }
+
+  .resume-header {
+    border-bottom: 3px solid var(--ink); padding-bottom: 1.5rem; margin-bottom: 2rem;
+    position: relative;
+  }
+  .resume-header::after {
+    content: ''; position: absolute; bottom: -6px; left: 0;
+    width: 80px; height: 3px; background: var(--saffron);
+  }
+  .r-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem; font-weight: 900; letter-spacing: -0.02em;
+    margin-bottom: 0.3rem;
+  }
+  .r-title { font-size: 0.95rem; color: var(--muted); font-weight: 600; margin-bottom: 0.75rem; letter-spacing: 0.05em; }
+  .r-contact {
+    display: flex; gap: 1.5rem; flex-wrap: wrap;
+    font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--muted);
+  }
+  .r-contact a { color: var(--saffron); text-decoration: none; }
+
+  .r-section { margin-bottom: 2.5rem; }
+  .r-section-title {
+    font-size: 0.65rem; font-weight: 800; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--saffron);
+    border-bottom: 1.5px solid rgba(244,114,11,0.2);
+    padding-bottom: 0.4rem; margin-bottom: 1.2rem;
+    font-family: 'DM Mono', monospace;
+  }
+  .r-summary { font-size: 0.93rem; line-height: 1.8; color: #3d3226; }
+
+  .r-job { margin-bottom: 1.8rem; }
+  .r-job-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.2rem; }
+  .r-job-title { font-weight: 800; font-size: 1rem; }
+  .r-job-date { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--muted); }
+  .r-job-co { color: var(--saffron); font-weight: 700; font-size: 0.85rem; font-family: 'DM Mono', monospace; margin-bottom: 0.75rem; }
+  .r-bullets { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+  .r-bullets li { font-size: 0.88rem; line-height: 1.7; padding-left: 1.2rem; position: relative; color: #3d3226; }
+  .r-bullets li::before { content: '▸'; position: absolute; left: 0; color: var(--saffron); }
+
+  .skills-block { display: flex; flex-direction: column; gap: 0.6rem; }
+  .skill-row { display: flex; gap: 1rem; align-items: baseline; }
+  .skill-row-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; font-weight: 600; color: var(--muted); min-width: 180px; }
+  .skill-row-val { font-size: 0.88rem; color: #3d3226; line-height: 1.6; }
+
+  .awards-list { display: flex; flex-direction: column; gap: 0.7rem; }
+  .award-item { font-size: 0.88rem; padding-left: 1.2rem; position: relative; line-height: 1.6; color: #3d3226; }
+  .award-item::before { content: '🏆'; position: absolute; left: 0; }
+
+  .print-btn {
+    position: fixed; bottom: 2rem; right: 2rem;
+    background: var(--saffron); color: white;
+    border: none; border-radius: 100px;
+    padding: 0.75rem 1.5rem; font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700; font-size: 0.85rem; cursor: pointer;
+    box-shadow: 0 8px 24px rgba(244,114,11,0.35);
+    display: flex; align-items: center; gap: 0.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .print-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(244,114,11,0.45); }
+
+  @media print {
+    .back-link, .print-btn { display: none; }
+    .resume-wrapper { padding: 1rem; }
+    body { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back-link">← Back to Portfolio</a>
+
+<div class="resume-wrapper">
+  <div class="resume-header">
+    <div class="r-name">Anubhuti Khare</div>
+    <div class="r-title">Technical Writer · API & Developer Documentation · SaaS Products</div>
+    <div class="r-contact">
+      <span>+91 8318459024</span>
+      <a href="mailto:khareanu1612@gmail.com">khareanu1612@gmail.com</a>
+      <a href="https://linkedin.com/in/anubhuti-khare-83a843195" target="_blank">LinkedIn</a>
+    </div>
+  </div>
+
+  <div class="r-section">
+    <div class="r-section-title">Professional Summary</div>
+    <p class="r-summary">Technical Writer with 3+ years of experience producing high-quality product, API, UX, and developer documentation for complex SaaS platforms. Holds a B.Tech. in Computer Science Engineering with strong command of structured authoring, docs-as-code workflows, Git, Markdown, XML, and HTML. Proven track record of collaborating cross-functionally with engineering, product, and design teams to deliver accurate, user-centered documentation at scale. Experienced in building documentation systems, leading ERD/schema migrations, creating multimedia content, and mentoring fellow writers.</p>
+  </div>
+
+  <div class="r-section">
+    <div class="r-section-title">Core Technical Skills</div>
+    <div class="skills-block">
+      <div class="skill-row"><span class="skill-row-label">Documentation Types</span><span class="skill-row-val">API/Developer Docs, Product Docs, UX Writing, Release Notes, Technical Specifications, Support Site Content, Runbooks, Schema/ERD Documentation</span></div>
+      <div class="skill-row"><span class="skill-row-label">Markup & Languages</span><span class="skill-row-val">Markdown, XML, HTML, CSS, JavaScript, DBML</span></div>
+      <div class="skill-row"><span class="skill-row-label">Docs-as-Code</span><span class="skill-row-val">Git, GitHub, VS Code, Command Line, Pull Request Review Workflows</span></div>
+      <div class="skill-row"><span class="skill-row-label">Authoring & CMS Tools</span><span class="skill-row-val">Document360, Confluence, dbdocs.io</span></div>
+      <div class="skill-row"><span class="skill-row-label">Multimedia & Design</span><span class="skill-row-val">Camtasia, ActivePresenter, Adobe Captivate, Figma, Guidde, Canva, Adobe Photoshop, Adobe Premiere Pro, DaVinci Resolve</span></div>
+      <div class="skill-row"><span class="skill-row-label">Core Competencies</span><span class="skill-row-val">Information Architecture, Cross-functional Collaboration, Hands-on Feature Testing, Style Guide Enforcement, Content Strategy, Documentation Audits</span></div>
+    </div>
+  </div>
+
+  <div class="r-section">
+    <div class="r-section-title">Professional Experience</div>
+
+    <div class="r-job">
+      <div class="r-job-header">
+        <span class="r-job-title">Technical Writer</span>
+        <span class="r-job-date">November 2024 – Present</span>
+      </div>
+      <div class="r-job-co">Hevodata</div>
+      <ul class="r-bullets">
+        <li>Developed and maintained product documentation, UX microcopy, and API/developer documentation for a fast-moving, highly technical data integration platform used by 2,000+ data teams globally.</li>
+        <li>Collaborated daily with engineering and product teams to validate features, reproduce edge cases, and ensure documentation accuracy prior to each release.</li>
+        <li>Led the migration of 89+ Entity Relationship Diagrams (ERDs) to dbdocs.io using DBML workflows, standardizing schema documentation and significantly improving maintainability and accuracy across the platform.</li>
+        <li>Spearheaded multiple high-impact documentation initiatives within first 90 days: glossary management, interactive video creation, full content audits, and customer success ticket analysis to surface documentation gaps.</li>
+        <li>Created interactive product walkthroughs and tutorial videos using ActivePresenter and Adobe Captivate.</li>
+        <li>Maintain all documentation via Git-based docs-as-code workflows, enforcing consistent style, version control, and cross-functional review cycles.</li>
+      </ul>
+    </div>
+
+    <div class="r-job">
+      <div class="r-job-header">
+        <span class="r-job-title">ID2 – Information Developer</span>
+        <span class="r-job-date">June 2022 – October 2024</span>
+      </div>
+      <div class="r-job-co">Whatfix</div>
+      <ul class="r-bullets">
+        <li>Owned end-to-end documentation lifecycle for product features — from early-stage design review to post-release support site content — across a suite of complex SaaS products.</li>
+        <li>Collaborated cross-functionally with product managers, engineers, and designers to gather technical requirements, validate accuracy, and align documentation with product intent.</li>
+        <li>Authored and maintained technical specifications, API documentation, internal runbooks, and user-facing support content using Document360 and Confluence.</li>
+        <li>Created infographics, walkthrough videos, flowcharts, and UI illustrations using Camtasia, Figma, Canva, and Adobe tools.</li>
+        <li>Actively participated in product design and usability reviews, contributing structured feedback on UI terminology, user flows, and UX writing quality.</li>
+        <li>Trained and mentored both junior and senior technical writers, contributing to team skill development and documentation quality standards.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="r-section">
+    <div class="r-section-title">Education</div>
+    <div class="r-job">
+      <div class="r-job-header">
+        <span class="r-job-title">Bachelor of Engineering, Computer Science</span>
+        <span class="r-job-date">2019 – 2023</span>
+      </div>
+      <div class="r-job-co">Bennett University · CGPA: 8.2 / 10</div>
+    </div>
+  </div>
+
+  <div class="r-section">
+    <div class="r-section-title">Awards & Recognition</div>
+    <div class="awards-list">
+      <div class="award-item"><strong>OKR Rockstar of the Quarter</strong> – Whatfix (February 2024): Recognized for exceeding all documentation OKR targets.</div>
+      <div class="award-item"><strong>Automators of the Quarter</strong> – Whatfix (February 2024): Recognized for driving automation of a large area of manual documentation work through cross-team collaboration.</div>
+    </div>
+  </div>
+</div>
+
+<button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+
+</body>
+</html>
