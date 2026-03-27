@@ -1,3 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Simulator — Anubhuti Khare</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bricolage+Grotesque:wght@400;600;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#faf7f2;--ink:#1a1208;--surface:#fff;--saffron:#f4720b;--rose:#e8456a;--teal:#0d9488;--green:#16a34a;--yellow:#d97706;--purple:#7c3aed;--muted:#8a7a6a;--border:rgba(0,0,0,.08);--cream:#fef3e2}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque',sans-serif;min-height:100vh}
+  header{background:var(--ink);color:white;padding:1rem 2rem;display:flex;align-items:center;gap:1.5rem;border-bottom:3px solid var(--rose);position:sticky;top:0;z-index:100}
+  .back{color:rgba(255,255,255,.5);text-decoration:none;font-size:.8rem;transition:color .15s}
+  .back:hover{color:var(--saffron)}
+  .tool-logo{font-size:1.1rem;font-weight:800}
+  .tool-logo span{color:var(--rose)}
+  .tool-tagline{font-size:.72rem;color:rgba(255,255,255,.45);font-family:'DM Mono',monospace;margin-left:auto;font-style:italic;max-width:300px;text-align:right}
+
+  .page{display:grid;grid-template-columns:1fr 1fr;height:calc(100vh - 57px)}
+  .left{border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+  .right{display:flex;flex-direction:column;overflow:hidden}
+
+  .pane-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+  .pane-title{font-family:'DM Mono',monospace;font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+
+  .controls{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:.75rem;flex-shrink:0}
+  .control-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+  label{display:block;font-family:'DM Mono',monospace;font-size:.6rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+  select{width:100%;border:1.5px solid var(--border);border-radius:6px;padding:.5rem .7rem;font-family:'Bricolage Grotesque',sans-serif;font-size:.83rem;color:var(--ink);background:var(--bg);outline:none;transition:border-color .15s}
+  select:focus{border-color:var(--saffron);background:white}
+
+  .doc-area{flex:1;padding:1rem 1.5rem;display:flex;flex-direction:column;gap:.75rem;overflow:hidden}
+  textarea{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:1rem;font-family:'DM Mono',monospace;font-size:.82rem;line-height:1.75;resize:none;outline:none;background:white;color:var(--ink);transition:border-color .15s}
+  textarea:focus{border-color:var(--saffron)}
+
+  .bottom-bar{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:.65rem;flex-wrap:wrap;flex-shrink:0}
+  .btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.2rem;border-radius:6px;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.82rem;border:1.5px solid transparent;transition:all .15s}
+  .btn-primary{background:var(--rose);color:white}
+  .btn-primary:hover{opacity:.85}
+  .btn-ghost{background:transparent;border-color:var(--border);color:var(--muted)}
+  .btn-ghost:hover{border-color:var(--ink);color:var(--ink)}
+  .btn-loading{opacity:.6;cursor:not-allowed}
+
+  /* RIGHT PANEL */
+  .questions-body{flex:1;overflow-y:auto;padding:1.5rem}
+  .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;color:var(--muted);gap:1rem}
+  .empty-icon{font-size:3rem;opacity:.5}
+  .empty-text{font-size:.87rem;line-height:1.7;max-width:280px}
+
+  /* QUESTION CARDS */
+  .q-user-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
+  .user-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+  .user-name{font-weight:800;font-size:.88rem}
+  .user-desc{font-size:.72rem;color:var(--muted);font-family:'DM Mono',monospace}
+
+  .question-card{border-radius:10px;padding:1rem 1.25rem;margin-bottom:.75rem;position:relative;border:1.5px solid}
+  .question-card .q-text{font-size:.9rem;line-height:1.65;margin-bottom:.5rem}
+  .q-meta{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+  .q-tag{font-family:'DM Mono',monospace;font-size:.58rem;font-weight:700;padding:.12rem .45rem;border-radius:100px;text-transform:uppercase;letter-spacing:.08em}
+  .q-tag.gap{background:rgba(232,69,106,.12);color:var(--rose);border:1px solid rgba(232,69,106,.25)}
+  .q-tag.ambiguity{background:rgba(244,114,11,.12);color:var(--saffron);border:1px solid rgba(244,114,11,.25)}
+  .q-tag.missing{background:rgba(124,58,237,.12);color:var(--purple);border:1px solid rgba(124,58,237,.25)}
+  .q-tag.prereq{background:rgba(13,148,136,.12);color:var(--teal);border:1px solid rgba(13,148,136,.25)}
+  .q-tag.jargon{background:rgba(217,119,6,.12);color:var(--yellow);border:1px solid rgba(217,119,6,.25)}
+  .q-suggestion{font-size:.75rem;color:var(--muted);margin-top:.5rem;padding-top:.5rem;border-top:1px solid rgba(0,0,0,.06);font-style:italic}
+  .q-doc-quote{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);background:rgba(0,0,0,.04);border-left:3px solid;padding:.4rem .7rem;border-radius:0 5px 5px 0;margin-bottom:.6rem;line-height:1.5}
+  .card-confused .q-doc-quote{border-color:var(--rose)}
+  .card-impatient .q-doc-quote{border-color:var(--saffron)}
+  .card-skeptic .q-doc-quote{border-color:var(--purple)}
+  .card-newbie .q-doc-quote{border-color:var(--teal)}
+  .q-suggestion strong{color:var(--ink);font-style:normal}
+
+  /* User type colours */
+  .card-confused{background:rgba(232,69,106,.04);border-color:rgba(232,69,106,.2)}
+  .card-impatient{background:rgba(244,114,11,.04);border-color:rgba(244,114,11,.2)}
+  .card-skeptic{background:rgba(124,58,237,.04);border-color:rgba(124,58,237,.2)}
+  .card-newbie{background:rgba(13,148,136,.04);border-color:rgba(13,148,136,.2)}
+
+  .score-bar{padding:1rem 1.5rem;border-top:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;gap:1rem}
+  .clarity-score{font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:700}
+  .score-good{color:var(--green)}
+  .score-ok{color:var(--yellow)}
+  .score-bad{color:var(--rose)}
+  .score-desc{font-size:.78rem;color:var(--muted);line-height:1.4}
+
+  .ai-badge{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);color:var(--purple);font-family:'DM Mono',monospace;font-size:.6rem;font-weight:700;padding:.15rem .5rem;border-radius:100px;text-transform:uppercase;letter-spacing:.08em}
+
+  .loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:1rem;color:var(--muted)}
+  .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--rose);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading-msg{font-size:.85rem;font-style:italic}
+</style>
+</head>
+<body>
+<header>
+  <a href="../index.html" class="back">← Portfolio</a>
+  <div class="tool-logo">User<span>.</span>Simulator</div>
+  <div class="tool-tagline">"If a confused, slightly irritated user read your doc, this is what they'd ask."</div>
+</header>
+
+<div class="page">
+  <!-- LEFT -->
+  <div class="left">
+    <div class="pane-header">
+      <span class="pane-title">Your Documentation</span>
+      <span class="ai-badge">✦ AI-Powered</span>
+    </div>
+    <div class="controls">
+      <div class="control-row">
+        <div>
+          <label>User Persona</label>
+          <select id="persona">
+            <option value="all">All personas (recommended)</option>
+            <option value="confused">😤 The Confused User</option>
+            <option value="impatient">🏃 The Impatient User</option>
+            <option value="skeptic">🧐 The Skeptical User</option>
+            <option value="newbie">🐣 The Total Newbie</option>
+          </select>
+        </div>
+        <div>
+          <label>Mood</label>
+          <select id="mood">
+            <option value="mildly">Mildly irritated</option>
+            <option value="very">Very confused</option>
+            <option value="polite">Politely frustrated</option>
+            <option value="done">Done with this product</option>
+          </select>
+        </div>
+      </div>
+      <div class="control-row">
+        <div>
+          <label>Doc Type</label>
+          <select id="doctype">
+            <option value="howto">How-to / Tutorial</option>
+            <option value="api">API Reference</option>
+            <option value="concept">Conceptual / Overview</option>
+            <option value="troubleshoot">Troubleshooting</option>
+            <option value="release">Release Notes</option>
+          </select>
+        </div>
+        <div>
+          <label>Expertise Level</label>
+          <select id="expertise">
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="expert">Expert / Power User</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="doc-area">
+      <textarea id="docInput" placeholder="Paste your documentation here...
+
+Example:
+To connect your Salesforce account, navigate to Sources and click Add Source. Search for Salesforce and enter your Consumer Key and Consumer Secret from your Connected App. Select the objects you want to sync and configure your pipeline frequency."></textarea>
+    </div>
+    <div class="bottom-bar">
+      <button class="btn btn-primary" id="runBtn" onclick="runSimulator()">😤 Simulate User</button>
+      <button class="btn btn-ghost" onclick="loadSample()">Load Sample</button>
+      <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right">
+    <div class="pane-header">
+      <span class="pane-title" id="rightTitle">User Questions</span>
+    </div>
+    <div class="questions-body" id="questionsBody">
+      <div class="empty-state">
+        <div class="empty-icon">🤔</div>
+        <div class="empty-text">Paste your documentation on the left and click <strong>Simulate User</strong> to see what a confused, slightly annoyed reader would ask.</div>
+      </div>
+    </div>
+    <div class="score-bar" id="scoreBar" style="display:none">
+      <div>
+        <div class="clarity-score" id="clarityScore"></div>
+        <div class="score-desc" id="clarityDesc"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const SAMPLE=`To connect your Salesforce account, navigate to the Sources section in the left sidebar and click Add Source. Search for Salesforce in the connector list. You will need your Consumer Key and Consumer Secret from your Salesforce Connected App. Enter these credentials and click Verify. Once verified, select the objects you want to sync. You can select multiple objects. Configure the pipeline frequency and click Save and Activate. The pipeline will begin syncing immediately.`;
 
@@ -19,99 +202,109 @@ function clearAll(){
 async function runSimulator(){
   const doc=document.getElementById('docInput').value.trim();
   if(!doc){alert('Paste some documentation first.');return}
-
   const persona=document.getElementById('persona').value;
   const mood=document.getElementById('mood').value;
   const doctype=document.getElementById('doctype').value;
   const expertise=document.getElementById('expertise').value;
-
   const btn=document.getElementById('runBtn');
+
   btn.classList.add('btn-loading');
-  btn.textContent='⟳ Simulating...';
-
-  document.getElementById('questionsBody').innerHTML=`<div class="loading-state"><div class="spinner"></div><div class="loading-msg">Actually reading your doc this time…</div></div>`;
+  btn.textContent='Reading your doc…';
   document.getElementById('scoreBar').style.display='none';
+  document.getElementById('questionsBody').innerHTML='<div class="loading-state"><div class="spinner"></div><div class="loading-msg">Simulating a confused, slightly annoyed user…</div></div>';
 
-  const personaDesc=persona==='all'
-    ?'Generate questions from 4 distinct users: confused, impatient, skeptical, and newbie.'
-    :`Generate questions ONLY from: ${PERSONAS[persona]?.name}.`;
+  const GEMINI_KEY='AIzaSyDrLFKJ9f8XN-NPXEbXW5MCYWPpcoCMDU8';
 
   const moodMap={
-    mildly:'mildly irritated',
-    very:'very confused and frustrated',
-    polite:'politely frustrated',
-    done:'completely done with this product'
+    mildly:'mildly irritated and slightly passive-aggressive',
+    very:'very confused and genuinely frustrated',
+    polite:'politely frustrated but trying to stay nice',
+    done:'completely done with this product and barely holding it together'
   };
 
-  const prompt=`You are simulating a real human user reading documentation.
+  const personaInstr=persona==='all'
+    ?`Generate exactly 2 questions each from these 4 personas (8 questions total):
+- "confused": has read the doc twice and is still lost
+- "impatient": skimmed it, missed things, just wants to get it done
+- "skeptic": doesn't trust the doc, needs proof, questions everything
+- "newbie": doesn't understand half the terminology`
+    :`Generate 6-7 questions, all from the perspective of: ${PERSONAS[persona]?.name} — ${PERSONAS[persona]?.desc}.`;
 
-User profile:
-- Expertise: ${expertise}
-- Doc type: ${doctype}
-- Mood: ${moodMap[mood]}
-${personaDesc}
+  const prompt=`You are simulating real users reading a piece of technical documentation. The users are ${moodMap[mood]||'frustrated'}.
 
-CRITICAL RULES:
-1. Every question MUST be triggered by a SPECIFIC phrase in the documentation
-2. You MUST quote or paraphrase the exact part that caused confusion
-3. DO NOT generate generic questions that could apply to any product
-4. Each question must target a DIFFERENT part of the document
-5. Avoid repeating the same confusion pattern
-6. Make the tone human, slightly emotional, and natural
+${personaInstr}
 
-BAD QUESTIONS (DO NOT DO THIS):
-- "Where do I find this?" (unless doc explicitly mentions it unclearly)
-- "What does this mean?" (without referencing exact phrase)
-- Anything generic
+STRICT RULES — follow every one:
+1. Every question MUST directly quote a specific phrase or sentence from the documentation provided. Format: You say "[exact quote from the doc]" — [then the question]. No exceptions.
+2. The SAME sentence from the doc CAN and SHOULD appear in multiple questions if it genuinely triggers different confusion from different personas.
+3. Questions must sound like a real frustrated human typed them. Conversational, specific, emotional. Never formal or polished.
+4. Each question must be specific to THIS documentation — not something that could apply to any doc.
+5. Tag each: gap (information is missing), ambiguity (wording is unclear), prereq (assumed prior knowledge), jargon (undefined term), missing (a step is missing).
+6. Fix: exactly one concrete sentence telling the writer what to add, change, or clarify.
 
-GOOD QUESTION STYLE:
-"You say 'configure pipeline frequency' — configure how exactly? What options do I even have?"
-
-For each question:
-- persona: confused | impatient | skeptic | newbie
-- question: natural human question referencing doc
-- tag: gap | ambiguity | missing | prereq | jargon
-- fix: 1-line improvement suggestion
-
-DOCUMENT:
-"""
+Documentation to analyze:
+---
 ${doc}
-"""
+---
 
-Return ONLY valid JSON:
+Respond with ONLY this JSON structure. No markdown, no explanation, nothing outside the JSON:
 {
-  "questions": [...],
-  "clarity_score": number,
-  "clarity_verdict": "one sharp sentence"
+  "questions": [
+    {
+      "persona": "confused|impatient|skeptic|newbie",
+      "quote": "the exact phrase from the doc that triggered this question",
+      "question": "the question in raw human voice",
+      "tag": "gap|ambiguity|prereq|jargon|missing",
+      "fix": "one concrete sentence telling the writer what to change"
+    }
+  ],
+  "clarity_score": <number 0-100>,
+  "clarity_verdict": "<one sentence: the single biggest clarity problem in this specific doc>"
 }`;
 
   try{
-    const response=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1200,
-        temperature:0.9,
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-
-    const data=await response.json();
-    const raw=data.content?.find(b=>b.type==='text')?.text||'';
-    const clean=raw.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+    const resp=await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+      {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          contents:[{parts:[{text:prompt}]}],
+          generationConfig:{
+            temperature:0.7,
+            maxOutputTokens:2048,
+            responseMimeType:'application/json'
+          }
+        })
+      }
+    );
+    if(!resp.ok){
+      const err=await resp.json();
+      throw new Error(err?.error?.message||'HTTP '+resp.status);
+    }
+    const data=await resp.json();
+    const raw=(data.candidates?.[0]?.content?.parts?.[0]?.text||'').trim();
+    const clean=raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/```\s*$/,'').trim();
     const parsed=JSON.parse(clean);
-
-    renderQuestions(parsed,persona);
-
+    if(parsed.questions&&parsed.questions.length>0){
+      renderQuestions(parsed,persona);
+    } else {
+      throw new Error('Empty response');
+    }
   }catch(err){
-    console.error(err);
-    renderFallback(doc,persona);
+    console.warn('Gemini error, using fallback:',err.message);
+    renderFallback(doc,persona,mood,expertise,doctype);
+    // Show a small notice
+    const notice=document.createElement('div');
+    notice.style.cssText='font-size:.72rem;color:var(--muted);font-family:DM Mono,monospace;padding:.5rem 1.5rem;border-top:1px solid var(--border)';
+    notice.textContent='AI unavailable — showing rule-based analysis. Check your API key.';
+    document.getElementById('questionsBody').appendChild(notice);
   }finally{
     btn.classList.remove('btn-loading');
     btn.textContent='😤 Simulate User';
   }
 }
+
 
 function renderQuestions(parsed,personaFilter){
   const questions=parsed.questions||[];
@@ -131,50 +324,197 @@ function renderQuestions(parsed,personaFilter){
   personasToShow.forEach(pKey=>{
     const pInfo=PERSONAS[pKey];
     if(!pInfo)return;
-    const pQuestions=grouped[pKey]||[];
+    const pQuestions=grouped[pKey]||questions.filter((_,i)=>i%personasToShow.length===personasToShow.indexOf(pKey));
     if(!pQuestions.length)return;
 
     html+=`<div class="q-user-header">
-      <div class="user-avatar">${pInfo.emoji}</div>
-      <div>
-        <div class="user-name">${pInfo.name}</div>
-        <div class="user-desc">${pInfo.desc}</div>
-      </div>
+      <div class="user-avatar" style="background:${pKey==='confused'?'rgba(232,69,106,.1)':pKey==='impatient'?'rgba(244,114,11,.1)':pKey==='skeptic'?'rgba(124,58,237,.1)':'rgba(13,148,136,.1)'}">${pInfo.emoji}</div>
+      <div><div class="user-name">${pInfo.name}</div><div class="user-desc">${pInfo.desc}</div></div>
     </div>`;
 
     pQuestions.forEach(q=>{
-      html+=`<div class="question-card ${PERSONAS[pKey]?.cardClass}">
-        <div class="q-text">"${q.question}"</div>
+      const quoteHtml=q.quote?`<div class="q-doc-quote">📌 "${q.quote}"</div>`:'';
+      html+=`<div class="question-card ${PERSONAS[pKey]?.cardClass||'card-confused'}">
+        ${quoteHtml}
+        <div class="q-text">${q.question}</div>
         <div class="q-meta"><span class="q-tag ${q.tag}">${q.tag}</span></div>
         <div class="q-suggestion"><strong>Fix →</strong> ${q.fix}</div>
       </div>`;
     });
   });
 
-  document.getElementById('questionsBody').innerHTML=html;
+  document.getElementById('questionsBody').innerHTML=html||'<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-text">No major confusion points found — nice work!</div></div>';
   document.getElementById('rightTitle').textContent=`${questions.length} questions generated`;
 
   const scoreEl=document.getElementById('clarityScore');
   scoreEl.textContent=score+'%';
   scoreEl.className='clarity-score '+(score>=80?'score-good':score>=60?'score-ok':'score-bad');
-  document.getElementById('clarityDesc').textContent=verdict;
+  document.getElementById('clarityDesc').textContent=verdict||`Clarity score: ${score>=80?'Good — users should be able to follow this.':score>=60?'Needs work — several unclear areas.':'Significant revision recommended.'}`;
   document.getElementById('scoreBar').style.display='flex';
 }
 
-function renderFallback(doc,personaFilter){
-  const questions=[
+function renderFallback(doc,personaFilter,mood,expertise,doctype){
+  // Split into sentences on . ! ? : (colon for field definitions)
+  const sentences=doc.split(/(?<=[.!?])\s+/).map(s=>s.trim()).filter(s=>s.length>12);
+
+  // Return the first sentence matching `pattern` that hasn't been used yet
+  // and doesn't match any exclusion pattern (avoids false positives)
+  function findQuote(pattern, exclude=[]){
+    const s=sentences.find(s=>{
+      if(!pattern.test(s)) return false;
+      if(exclude.some(ex=>ex.test(s))) return false;
+      return true;
+    });
+    if(!s) return null;
+    return s.length>90 ? s.slice(0,87).replace(/\s\S*$/,'')+'…' : s;
+  }
+
+  const RULES=[
     {
-      persona:'confused',
-      question:`You mention "${doc.slice(0,40)}..." — what exactly am I supposed to do here?`,
-      tag:'ambiguity',
-      fix:'Clarify this step with explicit instructions'
-    }
+      check:/consumer key|consumer secret/i, exclude:[],
+      persona:'newbie', tag:'prereq',
+      build:q=>`You say "${q}" — where do I actually find the Consumer Key and Secret? Is this somewhere in Salesforce? Do I need to create them? The doc tells me to enter values it never explains how to get.`,
+      fix:'Add a "Where to find this" callout linking to where these values are generated in the external platform.'
+    },
+    {
+      check:/\boauth\b/i, exclude:[],
+      persona:'newbie', tag:'jargon',
+      build:q=>`"${q}" — what is OAuth? Do I need to set it up first? Is it something my admin does? This is never explained and I can't proceed without knowing.`,
+      fix:'Define OAuth on first use with a one-sentence explanation and a note on whether prior setup is needed.'
+    },
+    {
+      check:/\bapi key\b|\bapi token\b|\baccess token\b|\bbearer token\b/i, exclude:[],
+      persona:'newbie', tag:'prereq',
+      build:q=>`"${q}" — how do I get this key? Generate it? Where? Does it expire? The doc assumes I already have one.`,
+      fix:'Add a prerequisite step: how to generate the key, where to find it, and whether it expires.'
+    },
+    {
+      check:/\bcredentials\b/i, exclude:[/credentials (are|is|means|include|refer|consist)/i, /no credential|without credential/i],
+      persona:'newbie', tag:'jargon',
+      build:q=>`"${q}" — what credentials exactly? My login password? An API token? Something else? "Credentials" means different things in different products.`,
+      fix:'Replace "credentials" with the exact field names the user needs to provide.'
+    },
+    {
+      check:/\bendpoint\b/i, exclude:[],
+      persona:'newbie', tag:'jargon',
+      build:q=>`"${q}" — what is an endpoint? Is it a URL I type in? A fixed value? I don't know what format this is supposed to be in.`,
+      fix:'Define "endpoint" on first use and provide an example value showing the expected format.'
+    },
+    {
+      // Only imperative configure — "Configure X", not "configured" past tense
+      check:/\bconfigure\s+[a-z]/i,
+      exclude:[/configured (earlier|previously|above|already|when|during|the)/i, /non-editable/i],
+      persona:'impatient', tag:'ambiguity',
+      build:q=>`"${q}" — configure HOW? What values? What are my options? What's the default? This is not an actionable instruction.`,
+      fix:'Replace "configure" with the specific fields, options, and recommended values the user should set.'
+    },
+    {
+      check:/\bnavigate to\b|\bgo to\b|\bopen the\b/i, exclude:[],
+      persona:'confused', tag:'ambiguity',
+      build:q=>`"${q}" — I'm not sure I'm in the right place. My screen looks different from what I'd expect. Is there a screenshot or a direct URL?`,
+      fix:'Add a screenshot of the correct starting state or provide the exact URL/path so users can confirm their location.'
+    },
+    {
+      // Past-tense "configured earlier" — signals something assumed done already
+      check:/configured earlier|configured above|configured previously|set up earlier/i, exclude:[],
+      persona:'confused', tag:'prereq',
+      build:q=>`"${q}" — I didn't do that. Or maybe I did but I'm not sure. The doc assumes I already completed a step it never fully explained. Where was I supposed to do this?`,
+      fix:'Add a link back to the step where this configuration happens, or add a prerequisite note at the top of the doc.'
+    },
+    {
+      check:/cannot be modified|cannot be changed|not editable|non-editable/i, exclude:[],
+      persona:'skeptic', tag:'gap',
+      build:q=>`"${q}" — okay, so what do I do if I set it wrong? The doc says I can't change it but doesn't tell me what my options are if I made a mistake. Do I delete everything and start over?`,
+      fix:'Add a "What if I need to change this?" section explaining the recovery path when a non-editable value is set incorrectly.'
+    },
+    {
+      check:/create a new (pipeline|project|account|integration|connection)/i, exclude:[],
+      persona:'impatient', tag:'gap',
+      build:q=>`"${q}" — so my only option is to start from scratch? What happens to the data from the old one? Do I lose anything? This feels like a big deal and the doc is very casual about it.`,
+      fix:'Add a clear explanation of what happens to existing data when creating a new resource, and whether the old one should be deleted.'
+    },
+    {
+      check:/data.*(remain|stay|kept|preserved)/i, exclude:[],
+      persona:'skeptic', tag:'gap',
+      build:q=>`"${q}" — will there be duplicate data? Two pipelines writing to the same destination? How do I know which data came from which pipeline? This isn't explained.`,
+      fix:'Clarify whether duplicate data is possible, how to identify data from each pipeline, and whether the old pipeline should be deactivated.'
+    },
+    {
+      check:/\bpermission\b|\baccess permission\b|\baccess level\b/i,
+      exclude:[/no permission|without permission|defines the.*permission/i],
+      persona:'impatient', tag:'prereq',
+      build:q=>`"${q}" — what role do I need exactly? What happens if I don't have it — silent failure or an error? I need to know this before I start, not after I hit a wall.`,
+      fix:'Add a "Required permissions" callout at the top with the exact role or permission name needed.'
+    },
+    {
+      check:/\bimmediately\b|\bautomatically\b|\bwill (start|begin|run|sync|ingest)\b/i, exclude:[],
+      persona:'skeptic', tag:'gap',
+      build:q=>`"${q}" — I don't see anything happening. Is there a status indicator? A confirmation? How long does this take? How do I know it's working and not silently broken?`,
+      fix:'Describe the exact UI feedback after this action — loading state, success message, or how to monitor progress.'
+    },
+    {
+      check:/\bnote:\b|\bnote that\b|\bimportant:\b|\bwarning:\b/i, exclude:[],
+      persona:'impatient', tag:'ambiguity',
+      build:q=>`"${q}" — if this is important enough to call out separately, why is it in the middle of everything? I almost missed it. Is this a hard requirement or a nice-to-know?`,
+      fix:'Use a distinct visual callout (warning, caution, tip) and place it before the relevant step, not after.'
+    },
+    {
+      check:/independently/i, exclude:[],
+      persona:'confused', tag:'ambiguity',
+      build:q=>`"${q}" — independently meaning what? They won't interfere with each other? Or they'll each write separate copies of the data? "Independently" is vague when two things are running in parallel.`,
+      fix:'Replace "independently" with a specific description of how the two pipelines behave in relation to each other.'
+    },
+    {
+      check:/\bsave\b|\bactivate\b|\bsubmit\b|\bdeploy\b/i, exclude:[/saved|activated|submitted|deployed/i],
+      persona:'skeptic', tag:'missing',
+      build:q=>`"${q}" — what if I made a mistake? Can I undo this? Edit it? Delete it and start over? You're asking me to commit to something without saying whether it's reversible.`,
+      fix:'Add a note about whether this action is reversible and how to modify or delete it after saving.'
+    },
   ];
 
-  renderQuestions({
-    questions,
-    clarity_score:60,
-    clarity_verdict:'Fallback mode — API failed'
-  },personaFilter);
+  const matched=[];
+  RULES.forEach(rule=>{
+    const quote=findQuote(rule.check, rule.exclude);
+    if(!quote) return;
+    matched.push({persona:rule.persona,tag:rule.tag,question:rule.build(quote),fix:rule.fix,quote});
+  });
+
+  // Two universal questions using real sentences from the doc
+  const lastSent=sentences[sentences.length-1];
+  if(lastSent){
+    matched.push({
+      persona:'confused',tag:'gap',
+      question:`I got to "${lastSent.length>70?lastSent.slice(0,67)+'…':lastSent}" — and then nothing. How do I know it actually worked? There's no success state, no confirmation, no "you're done."`,
+      fix:'End the doc with a clear success state — what the user sees, what changed, and what to do next.',
+      quote:lastSent
+    });
+  }
+  const firstSent=sentences[0];
+  if(firstSent){
+    matched.push({
+      persona:'skeptic',tag:'ambiguity',
+      question:`The doc starts with "${firstSent.length>70?firstSent.slice(0,67)+'…':firstSent}" — but when was this last updated? The interface I'm seeing looks different. Is this current?`,
+      fix:'Add a "Last updated" date and product version number at the top of every doc.',
+      quote:firstSent
+    });
+  }
+
+  const personasToUse=personaFilter==='all'?['confused','impatient','skeptic','newbie']:[personaFilter];
+  const byPersona={};
+  personasToUse.forEach(p=>{byPersona[p]=[]});
+  matched.forEach(r=>{
+    if(byPersona[r.persona]!==undefined&&byPersona[r.persona].length<3) byPersona[r.persona].push(r);
+  });
+  let final=[];
+  personasToUse.forEach(p=>final.push(...(byPersona[p]||[])));
+  if(final.length<4) matched.forEach(r=>{if(!final.includes(r)&&final.length<8)final.push(r)});
+  final=final.slice(0,Math.min(9,Math.max(4,final.length)));
+
+  const mapped=final.map(r=>({persona:r.persona,question:r.question,tag:r.tag,fix:r.fix,quote:r.quote}));
+  const issueScore=Math.max(20,100-Math.min(75,mapped.length*9));
+  const verdict=issueScore>=75?`Generally clear, but ${mapped.length} specific lines triggered confusion worth addressing.`:issueScore>=55?`${mapped.length} confusion points found — users are likely to stall at these exact sentences.`:`Significant revision needed. ${mapped.length} lines are likely to confuse or frustrate readers.`;
+  renderQuestions({questions:mapped,clarity_score:issueScore,clarity_verdict:verdict},personaFilter);
 }
 </script>
+</body>
+</html>
